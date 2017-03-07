@@ -1,4 +1,8 @@
-﻿using Abp.EntityFramework;
+﻿using System.Data.Entity;
+using System.Data.Entity.ModelConfiguration.Conventions;
+using Abp.EntityFramework;
+using Jueci.ApiService.ApiAuthorization.Entities;
+using Jueci.ApiService.Mappings;
 
 namespace Jueci.ApiService.EntityFramework
 {
@@ -8,6 +12,8 @@ namespace Jueci.ApiService.EntityFramework
 
         //Example:
         //public virtual IDbSet<User> Users { get; set; }
+
+          public virtual IDbSet<AppKey> AppKeys { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.
@@ -28,6 +34,14 @@ namespace Jueci.ApiService.EntityFramework
             : base(nameOrConnectionString)
         {
 
+        }
+
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Conventions.Remove<PluralizingTableNameConvention>();
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Configurations.Add(new AppkeyMap());
         }
     }
 }
