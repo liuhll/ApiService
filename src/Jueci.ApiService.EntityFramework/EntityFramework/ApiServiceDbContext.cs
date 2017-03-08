@@ -3,6 +3,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using Abp.EntityFramework;
 using Jueci.ApiService.ApiAuthorization.Entities;
 using Jueci.ApiService.Mappings;
+using Jueci.ApiService.UserAuth.Entities;
 
 namespace Jueci.ApiService.EntityFramework
 {
@@ -13,7 +14,17 @@ namespace Jueci.ApiService.EntityFramework
         //Example:
         //public virtual IDbSet<User> Users { get; set; }
 
-          public virtual IDbSet<AppKey> AppKeys { get; set; }
+        public virtual IDbSet<AppKey> AppKeys { get; set; }
+
+        public virtual IDbSet<UserInfo> UserInfos { get; set; }
+
+        public virtual IDbSet<UserServiceSubscriptionInfo> UserServiceSubscriptionInfos { get; set; }
+
+        public virtual IDbSet<ServicePrice> ServicePrices { get; set; }
+
+        public virtual IDbSet<AgentInfo> AgentInfos { get; set; }
+
+        public virtual IDbSet<AgentRole> AgentRoles { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.
@@ -42,6 +53,10 @@ namespace Jueci.ApiService.EntityFramework
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Configurations.Add(new AppkeyMap());
+            modelBuilder.Configurations.Add(new UserServiceSubscriptionInfoMap());
+            modelBuilder.Configurations.Add(new ServicePriceMap());
+            modelBuilder.Configurations.Add(new AgentInfoMap());
+            modelBuilder.Configurations.Add(new AgentRoleMap());
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System.Reflection;
+using Abp.AutoMapper;
 using Abp.Configuration.Startup;
 using Abp.Modules;
 
 namespace Jueci.ApiService
 {
-    [DependsOn(typeof(ApiServiceCoreModule))]
+    [DependsOn(typeof(ApiServiceCoreModule),typeof(AbpAutoMapperModule))]
     public class ApiServiceApplicationModule : AbpModule
     {
         public override void PreInitialize()

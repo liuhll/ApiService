@@ -19,19 +19,23 @@ namespace Jueci.ApiService.ApiAuthorization
         {
             try
             {
+#if DEBUG
+                return true;
+#else
                 string appid;
                 string sign;
                 long timestamp;
                 var paramList = GetRequestParams(actionContext,out appid, out sign, out timestamp);
                 IApiAuthorizePolicy authorizePolicy = new ApiAuthorizePolicy(paramList, timestamp, sign);
                 return authorizePolicy.IsValidTime() && authorizePolicy.IsLegalSign();
+#endif
             }
             catch (Exception ex)
             {
                 LogHelper.Logger.Error("授权验证失败,原因" + ex.Message);
                 return false;
             }
-       
+
         }
 
         private IDictionary<string, string> GetRequestParams(HttpActionContext actionContext,out string appid, out string sign, out long timestamp)
