@@ -199,10 +199,13 @@ namespace Jueci.ApiService.UserAuth.Sales
             if (isUpgrade)
             {
                 //Debug.Assert(model.SuggestCost != null, "model.SuggestCost != null");
-                
-                return effectiveOrder.OriginalCost - model.SuggestCost.Value + servicePrice.Price;
+                if (effectiveOrder.OriginalCost >= servicePrice.Price)
+                {
+                    throw new Exception("不允许升级");
+                }
+                return  servicePrice.Price;
             }
-            return effectiveOrder.OriginalCost + model.SuggestCost.Value;
+            return effectiveOrder.OriginalCost + servicePrice.Price;
         }
 
         public bool TestProductValues(int uid,int pid,string subscriptionOrderId, decimal productValue, decimal salesCost, out string msg)

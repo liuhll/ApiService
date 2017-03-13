@@ -84,6 +84,7 @@ namespace Jueci.ApiService.UserAuth
                     SubscriptionOrderId = p.AuthType > currentUserServiceAuth.AuthType ? currentUserServiceAuth.Id : "",
                 }).ToList();
 
+                userServicePrices = userServicePrices.Where(p => p.Cost >= 0).ToList();
             }
 
             return userServicePrices;

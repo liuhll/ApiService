@@ -108,6 +108,10 @@
     <Compile Include="ApiServiceApplicationModule.cs" />
     <Compile Include="ApiServiceAppServiceBase.cs" />
     <Compile Include="Base\Dtos\BasicDto.cs" />
+    <Compile Include="Pay\Dtos\PayOrderInfoInput.cs" />
+    <Compile Include="Pay\Dtos\PayOrderInfoOutput.cs" />
+    <Compile Include="Pay\IPayAppService.cs" />
+    <Compile Include="Pay\PayAppService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserAuth\Dtos\UserAuthInput.cs" />
     <Compile Include="UserAuth\Dtos\UserAuthOutput.cs" />
