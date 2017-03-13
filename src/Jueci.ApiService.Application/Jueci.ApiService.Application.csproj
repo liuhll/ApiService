@@ -111,7 +111,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserAuth\Dtos\UserAuthInput.cs" />
     <Compile Include="UserAuth\Dtos\UserAuthOutput.cs" />
-    <Compile Include="UserAuth\Dtos\UserSericeInput.cs" />
     <Compile Include="UserAuth\Dtos\UserServicePriceOutput.cs" />
     <Compile Include="UserAuth\IUserAuthAppService.cs" />
     <Compile Include="UserAuth\UserAuthAppService.cs" />

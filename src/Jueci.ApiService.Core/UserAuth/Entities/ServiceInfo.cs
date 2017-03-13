@@ -20,12 +20,10 @@ namespace Jueci.ApiService.UserAuth.Entities
         //   private IList<ServicePrice> _servicePrices;
 
         #region 扩展属性
-        public virtual IList<ServicePrice> ServicePrices
-        {
-            get; set;
-        }
 
         public virtual ICollection<UserServiceSubscriptionInfo> UserServiceSubscriptionInfos { get; set; }
+
+        public virtual ICollection<ServicePrice> ServicePrices { get; set; }
 
         public virtual ICollection<AgentRoleAuthMap> AgentRoleAuthMaps { get; set; }
 

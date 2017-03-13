@@ -25,7 +25,7 @@ namespace Jueci.ApiService.UserAuth.Entities
 
         public DateTime? UpdateTime { get; set; }
 
-        public DateTime AuthExpiration { get; set; }
+        public DateTime? AuthExpiration { get; set; }
 
         public string Remarks { get; set; }
 

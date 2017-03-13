@@ -23,12 +23,12 @@ namespace Jueci.ApiService.UserAuth.Dtos
         /// <summary>
         /// 原始价格
         /// </summary>
-        public decimal OriginalPrice { get; set; }
+        public decimal OriginalCost { get; set; }
 
         /// <summary>
         /// 代理商销售价格
         /// </summary>
-        public decimal AgentPrice { get; set; }
+        public decimal? AgentCost { get; set; }
 
         /// <summary>
         /// 授权描述
@@ -48,7 +48,7 @@ namespace Jueci.ApiService.UserAuth.Dtos
         /// <summary>
         /// 销售价格
         /// </summary>
-        public decimal SalesPrice { get; set; }
+        public decimal Cost { get; set; }
 
         /// <summary>
         /// 购买类型

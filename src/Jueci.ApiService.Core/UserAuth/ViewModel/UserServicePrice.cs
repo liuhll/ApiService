@@ -8,9 +8,9 @@ namespace Jueci.ApiService.UserAuth.ViewModel
 
         public int Pid { get; set; }
 
-        public decimal OriginalPrice { get; set; }
+        public decimal OriginalCost { get; set; }
 
-        public decimal? AgentPrice { get; set; }
+        public decimal? AgentCost { get; set; }
 
         public string AuthDesc { get; set; }
 
@@ -18,7 +18,7 @@ namespace Jueci.ApiService.UserAuth.ViewModel
 
         public string Description { get; set; }
 
-        public decimal SalesPrice { get; set; }
+        public decimal Cost { get; set; }
 
         public PurchaseType PurchaseType { get; set; }
 

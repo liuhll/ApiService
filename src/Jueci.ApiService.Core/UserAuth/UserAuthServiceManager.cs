@@ -31,7 +31,6 @@ namespace Jueci.ApiService.UserAuth
 
         public async Task<IList<UserServicePrice>> UserServiceList(int uid, int sid, int? agentId)
         {
-            // 1. 用户当前授权的版本
             var userInfo = await
                 _userRepository.FirstOrDefaultAsync(
                     p => p.Id == uid);
@@ -46,7 +45,6 @@ namespace Jueci.ApiService.UserAuth
 
             IList<UserServicePrice> userServicePrices = null;
 
-            // 没有购买过授权的情况下
             if (currentUserServiceAuth == null || !currentUserServiceAuth.IsValidityPeriod)
             {
                 var priceList = await _servicePriceRepository.GetAllListAsync(p => p.ServiceId == sid && p.State == State.Active);
@@ -54,13 +52,13 @@ namespace Jueci.ApiService.UserAuth
                 {
                     Sid = p.ServiceId,
                     Pid = p.Id,
-                    OriginalPrice = p.Price,
-                    AgentPrice = agentId == null || agentId <=0 ? 0 : GetGeneralSalesPrice(p, agentId),
+                    OriginalCost = p.Price,
+                    AgentCost = agentId == null || agentId <=0 ? (decimal?)null : GetGeneralSalesPrice(p, agentId),
                     AuthDesc = p.AuthDesc,
                     AuthType = p.AuthType,
                     Description = p.Description,
                     PurchaseType = PurchaseType.NewPuchase,
-                    SalesPrice = GetGeneralSalesPrice(p, agentId)
+                    Cost = GetGeneralSalesPrice(p, agentId)
 
                 }).ToList();
             }
@@ -76,21 +74,17 @@ namespace Jueci.ApiService.UserAuth
                 {
                     Sid = p.ServiceId,
                     Pid = p.Id,
-                    OriginalPrice = p.Price,
-                    AgentPrice = agentId == null || agentId <= 0 ? 0 : GetAgentSalesPrice(p, currentUserServiceAuth, agentId.Value),
+                    OriginalCost = p.Price,
+                    AgentCost = agentId == null || agentId <= 0 ? (decimal?) null : GetAgentSalesPrice(p, currentUserServiceAuth, agentId.Value),
                     AuthDesc = p.AuthDesc,
                     AuthType = p.AuthType,
                     Description = p.Description,
                     PurchaseType = p.AuthType > currentUserServiceAuth.AuthType ? PurchaseType.Upgrade : PurchaseType.ReNew,
-                    SalesPrice = GetUpgradePrice(p, currentUserServiceAuth, agentId),
+                    Cost = GetUpgradePrice(p, currentUserServiceAuth, agentId),
                     SubscriptionOrderId = p.AuthType > currentUserServiceAuth.AuthType ? currentUserServiceAuth.Id : "",
                 }).ToList();
 
             }
-
-            // 2. 获取用户可销售的ServicePrice
-
-            // 3. 
 
             return userServicePrices;
         }
@@ -114,10 +108,21 @@ namespace Jueci.ApiService.UserAuth
             }
             var agentDiscount = (servicePrice.AgentPrice/servicePrice.Price) * agentInfo.AgentRole.Discount;
             var serviceSalesPrice = servicePrice.Price;
-            var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
-                                     (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Days, 2);
 
-            var currentServiceCost = serviceSalesPrice - currentUserServiceAuth.OriginalCost * (1 - useRate);
+            decimal surplusValue;
+
+            if (currentUserServiceAuth.AuthExpiration != null)
+            {
+                var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
+                                     (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Value.Days, 2);
+                surplusValue = currentUserServiceAuth.OriginalCost*(1 - useRate);
+            }
+            else
+            {
+                surplusValue = currentUserServiceAuth.OriginalCost;
+            }
+
+            var currentServiceCost = serviceSalesPrice - surplusValue;
 
             var agentSalesCost = Math.Round(currentServiceCost, 2);
             var upgradePrice = agentSalesCost*agentDiscount;
@@ -159,11 +164,27 @@ namespace Jueci.ApiService.UserAuth
             if (servicePrice.AuthType > currentUserServiceAuth.AuthType)
             {
                 var serviceSalesPrice = servicePrice.Price;
-                var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
-                               (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Days, 2);
 
-                var currentServiceCost = serviceSalesPrice - currentUserServiceAuth.OriginalCost * (1 - useRate);
+                decimal productSurplusValue; 
 
+                if (currentUserServiceAuth.AuthExpiration != null)
+                {
+                    var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
+                               (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Value.Days, 2);
+
+                    productSurplusValue = currentUserServiceAuth.OriginalCost*(1 - useRate);
+                }
+                else
+                {
+                    productSurplusValue = currentUserServiceAuth.OriginalCost;
+                }
+
+                if (productSurplusValue > serviceSalesPrice)
+                {
+                    return 0;
+                }
+
+                var currentServiceCost = serviceSalesPrice - productSurplusValue;
                 return Math.Round(currentServiceCost, 2);
             }
             return GetGeneralSalesPrice(servicePrice,agentId);

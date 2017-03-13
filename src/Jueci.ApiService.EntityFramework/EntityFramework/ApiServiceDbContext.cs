@@ -26,6 +26,12 @@ namespace Jueci.ApiService.EntityFramework
 
         public virtual IDbSet<AgentRole> AgentRoles { get; set; }
 
+        public virtual IDbSet<UserServiceAuthInfo> UserServiceAuthInfos { get; set; }
+
+        public virtual IDbSet<UserRecharge> UserRecharges { get; set; }
+
+        public virtual IDbSet<ServiceInfo> ServiceInfos { get; set; }
+
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.
          *   But it may cause problems when working Migrate.exe of EF. If you will apply migrations on command line, do not
@@ -57,6 +63,9 @@ namespace Jueci.ApiService.EntityFramework
             modelBuilder.Configurations.Add(new ServicePriceMap());
             modelBuilder.Configurations.Add(new AgentInfoMap());
             modelBuilder.Configurations.Add(new AgentRoleMap());
+            modelBuilder.Configurations.Add(new UserServiceAuthInfoMap());
+            modelBuilder.Configurations.Add(new UserRechargeMap());
+            modelBuilder.Configurations.Add(new ServiceInfoMap());
         }
     }
 }

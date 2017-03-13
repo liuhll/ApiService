@@ -1270,6 +1270,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="Commons\Enums\CommentsType.cs" />
+    <Compile Include="Commons\Enums\SalesWay.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ApiServiceControllerBase.cs" />
     <Compile Include="Global.asax.cs">

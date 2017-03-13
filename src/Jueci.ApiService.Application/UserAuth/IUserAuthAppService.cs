@@ -7,6 +7,7 @@ using Jueci.ApiService.Base;
 using Jueci.ApiService.Common;
 using Jueci.ApiService.Common.Enums;
 using Jueci.ApiService.UserAuth.Dtos;
+using Jueci.ApiService.UserAuth.Sales;
 using Jueci.ApiService.UserAuth.ViewModel;
 
 namespace Jueci.ApiService.UserAuth
@@ -27,14 +28,16 @@ namespace Jueci.ApiService.UserAuth
         /// <returns>用户可授权的服务信息</returns>
         /// <remarks>通过用户通行证和服务Id获取用户可授权的服务列表</remarks>        
         [HttpGet]
-       Task<ResultMessage<IList<UserServicePriceOutput>>> UserServiceList(int uid,int sid, int? agentId, string appId,string sign,long timestamp);
+       Task<ResultMessage<IList<UserServicePriceOutput>>> UserServiceList(int uid,int sid, string appId,string sign,long timestamp, int? agentId = null);
 
         /// <summary>
         /// 用户服务授权
         /// </summary>
         /// <param name="input">输入参数</param>
-        /// <returns></returns>
+        /// <returns>授权是否成功</returns>
+        /// <remarks>为给定的用户授予指定的服务</remarks>
         [HttpPost]
-        string UserAuthorize(UserAuthInput input);
+        Task<ResultMessage<SalesResultMessage>> UserAuthorize(UserAuthInput input);
+
     }
 }

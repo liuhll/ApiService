@@ -111,7 +111,10 @@
     <Compile Include="Mappings\AgentInfoMap.cs" />
     <Compile Include="Mappings\AgentRoleMap.cs" />
     <Compile Include="Mappings\AppkeyMap.cs" />
+    <Compile Include="Mappings\ServiceInfoMap.cs" />
     <Compile Include="Mappings\ServicePriceMap.cs" />
+    <Compile Include="Mappings\UserRechargeMap.cs" />
+    <Compile Include="Mappings\UserServiceAuthInfoMap.cs" />
     <Compile Include="Mappings\UserServiceSubscriptionInfoMap.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="ApiServiceDataModule.cs" />

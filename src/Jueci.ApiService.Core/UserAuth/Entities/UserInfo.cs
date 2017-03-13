@@ -41,6 +41,8 @@ namespace Jueci.ApiService.UserAuth.Entities
 
         public virtual ICollection<UserServiceSubscriptionInfo> UserServiceSubscriptionInfos { get; set; }
 
+        public virtual ICollection<UserRecharge> UserRecharges { get; set; }
+
         /// <summary>
         ///如果是代理商，则获取代理商信息
         /// </summary>
