@@ -20,7 +20,12 @@ namespace Jueci.ApiService.ApiAuthorization
             try
             {
 #if DEBUG
-                return true;
+                string appid;
+                string sign;
+                long timestamp;
+                var paramList = GetRequestParams(actionContext, out appid, out sign, out timestamp);
+                IApiAuthorizePolicy authorizePolicy = new ApiAuthorizePolicy(paramList, timestamp, sign);
+                return authorizePolicy.IsValidTime() && authorizePolicy.IsLegalSign();
 #else
                 string appid;
                 string sign;
@@ -62,7 +67,7 @@ namespace Jueci.ApiService.ApiAuthorization
                     {
                         requesTimestamp = Convert.ToInt64(qString[q]);
                     }
-                    requestParams.Add(q.Split('.')[1].ToLower(), qString[q]);
+                    requestParams.Add(q.Split('.')[0].ToLower(), qString[q]);
                 }
             }
             else

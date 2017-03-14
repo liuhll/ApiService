@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Abp.Dependency;
 using Abp.Domain.Repositories;
 using Abp.Logging;
@@ -46,7 +47,7 @@ namespace Jueci.ApiService.ApiAuthorization.Policy
             {
                 throw new Exception("不存在的appid");
             }
-            _paramList.Add("secretkey",appKey.SecretKey);
+            _paramList.Add("secretkey", Regex.Replace(appKey.SecretKey, @"\s", ""));
             var encryptedStr = GetSignContent(_paramList);
             var isLegalSign = EncryptionHelper.EncryptSHA256(encryptedStr).Equals(_sign);
             if (!isLegalSign)
@@ -60,11 +61,10 @@ namespace Jueci.ApiService.ApiAuthorization.Policy
         private string GetSignContent(IDictionary<string, string> parameters)
         {
             // 第一步：把字典按Key的字母顺序排序
-            IDictionary<string, string> sortedParams = new SortedDictionary<string, string>(parameters);
-            IEnumerator<KeyValuePair<string, string>> dem = sortedParams.GetEnumerator();
-
             // sign 不参与签名
             parameters.Remove("sign");
+            IDictionary<string, string> sortedParams = new SortedDictionary<string, string>(parameters);
+            IEnumerator<KeyValuePair<string, string>> dem = sortedParams.GetEnumerator();
 
             // 第二步：把所有参数名和参数值串在一起
             StringBuilder query = new StringBuilder("");
