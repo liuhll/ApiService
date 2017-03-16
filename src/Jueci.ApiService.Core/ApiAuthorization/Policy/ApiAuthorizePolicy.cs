@@ -70,7 +70,7 @@ namespace Jueci.ApiService.ApiAuthorization.Policy
             StringBuilder query = new StringBuilder("");
             while (dem.MoveNext())
             {
-                string key = dem.Current.Key;
+                string key = dem.Current.Key.ToLower();
                 string value = dem.Current.Value;
                 if (!string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(value))
                 {

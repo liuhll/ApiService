@@ -53,12 +53,12 @@ namespace Jueci.ApiService.UserAuth
                     Sid = p.ServiceId,
                     Pid = p.Id,
                     OriginalCost = p.Price,
-                    AgentCost = agentId == null || agentId <=0 ? (decimal?)null : GetGeneralSalesPrice(p, agentId),
+                    AgentCost = agentId == null || agentId <= 0 ? (decimal?)null : GetGeneralSalesPrice(p, agentId),
                     AuthDesc = p.AuthDesc,
                     AuthType = p.AuthType,
                     Description = p.Description,
                     PurchaseType = PurchaseType.NewPuchase,
-                    Cost = GetGeneralSalesPrice(p, agentId)
+                    Cost = p.Price,
 
                 }).ToList();
             }
@@ -75,7 +75,7 @@ namespace Jueci.ApiService.UserAuth
                     Sid = p.ServiceId,
                     Pid = p.Id,
                     OriginalCost = p.Price,
-                    AgentCost = agentId == null || agentId <= 0 ? (decimal?) null : GetAgentSalesPrice(p, currentUserServiceAuth, agentId.Value),
+                    AgentCost = agentId == null || agentId <= 0 ? (decimal?)null : GetAgentSalesPrice(p, currentUserServiceAuth, agentId.Value),
                     AuthDesc = p.AuthDesc,
                     AuthType = p.AuthType,
                     Description = p.Description,
@@ -84,13 +84,20 @@ namespace Jueci.ApiService.UserAuth
                     SubscriptionOrderId = p.AuthType > currentUserServiceAuth.AuthType ? currentUserServiceAuth.Id : "",
                 }).ToList();
 
-                userServicePrices = userServicePrices.Where(p => p.Cost >= 0).ToList();
+                userServicePrices = userServicePrices.Select(p =>
+                {
+                    if (p.Cost <= 0)
+                    {
+                        p.AgentCost = 0;
+                    }
+                    return p;
+                }).ToList();
             }
 
             return userServicePrices;
         }
 
-        private decimal GetAgentSalesPrice(ServicePrice servicePrice,UserServiceSubscriptionInfo currentUserServiceAuth, int agentId)
+        private decimal GetAgentSalesPrice(ServicePrice servicePrice, UserServiceSubscriptionInfo currentUserServiceAuth, int agentId)
         {
             var agentInfo = _agentRepository.FirstOrDefault(p => p.Id == agentId);
             if (agentInfo == null)
@@ -107,7 +114,7 @@ namespace Jueci.ApiService.UserAuth
             {
                 return servicePrice.AgentPrice * agentInfo.AgentRole.Discount;
             }
-            var agentDiscount = (servicePrice.AgentPrice/servicePrice.Price) * agentInfo.AgentRole.Discount;
+            var agentDiscount = (servicePrice.AgentPrice / servicePrice.Price) * agentInfo.AgentRole.Discount;
             var serviceSalesPrice = servicePrice.Price;
 
             decimal surplusValue;
@@ -116,7 +123,7 @@ namespace Jueci.ApiService.UserAuth
             {
                 var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
                                      (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Value.Days, 2);
-                surplusValue = currentUserServiceAuth.OriginalCost*(1 - useRate);
+                surplusValue = currentUserServiceAuth.OriginalCost * (1 - useRate);
             }
             else
             {
@@ -126,7 +133,7 @@ namespace Jueci.ApiService.UserAuth
             var currentServiceCost = serviceSalesPrice - surplusValue;
 
             var agentSalesCost = Math.Round(currentServiceCost, 2);
-            var upgradePrice = agentSalesCost*agentDiscount;
+            var upgradePrice = agentSalesCost * agentDiscount;
             return upgradePrice;
         }
 
@@ -151,7 +158,7 @@ namespace Jueci.ApiService.UserAuth
         //    {
         //        throw new Exception(String.Format("代理商{0}被冻结,销售价格获取失败，冻结原因:{1}", agentId, agentInfo.FrozenRemarks));
         //    }
-          
+
         //    if (!isUpgrade)
         //    {
         //        return servicePrice.AgentPrice * agentInfo.AgentRole.Discount;
@@ -160,20 +167,20 @@ namespace Jueci.ApiService.UserAuth
 
         //}
 
-        private decimal GetUpgradePrice(ServicePrice servicePrice, UserServiceSubscriptionInfo currentUserServiceAuth,int? agentId)
+        private decimal GetUpgradePrice(ServicePrice servicePrice, UserServiceSubscriptionInfo currentUserServiceAuth, int? agentId)
         {
             if (servicePrice.AuthType > currentUserServiceAuth.AuthType)
             {
                 var serviceSalesPrice = servicePrice.Price;
 
-                decimal productSurplusValue; 
+                decimal productSurplusValue;
 
                 if (currentUserServiceAuth.AuthExpiration != null)
                 {
                     var useRate = Math.Round((decimal)(DateTime.Now - currentUserServiceAuth.CreateTime).Days /
                                (currentUserServiceAuth.AuthExpiration - currentUserServiceAuth.CreateTime).Value.Days, 2);
 
-                    productSurplusValue = currentUserServiceAuth.OriginalCost*(1 - useRate);
+                    productSurplusValue = currentUserServiceAuth.OriginalCost * (1 - useRate);
                 }
                 else
                 {
@@ -188,7 +195,7 @@ namespace Jueci.ApiService.UserAuth
                 var currentServiceCost = serviceSalesPrice - productSurplusValue;
                 return Math.Round(currentServiceCost, 2);
             }
-            return GetGeneralSalesPrice(servicePrice,agentId);
+            return servicePrice.Price;
         }
 
 
