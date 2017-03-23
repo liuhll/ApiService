@@ -20,12 +20,13 @@ namespace Jueci.ApiService.ApiAuthorization
             try
             {
 #if DEBUG
-                string appid;
-                string sign;
-                long timestamp;
-                var paramList = GetRequestParams(actionContext, out appid, out sign, out timestamp);
-                IApiAuthorizePolicy authorizePolicy = new ApiAuthorizePolicy(paramList, timestamp, sign);
-                return authorizePolicy.IsValidTime() && authorizePolicy.IsLegalSign();
+                //string appid;
+                //string sign;
+                //long timestamp;
+                //var paramList = GetRequestParams(actionContext, out appid, out sign, out timestamp);
+                //IApiAuthorizePolicy authorizePolicy = new ApiAuthorizePolicy(paramList, timestamp, sign);
+                //return authorizePolicy.IsValidTime() && authorizePolicy.IsLegalSign();
+                return true;
 #else
                 string appid;
                 string sign;
