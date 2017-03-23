@@ -17,7 +17,7 @@ namespace Jueci.ApiService.UserAuth.Sales
 {
     public class SalesSoftwareProcessor : ISalesSoftwareProcessor
     {
-      //  private readonly IUnitOfWorkManager _unitOfWorkManager;
+        private readonly IUnitOfWorkManager _unitOfWorkManager;
         private readonly IRepository<UserServiceAuthInfo> _userServiceAuthRepository;
         private readonly IRepository<UserServiceSubscriptionInfo, string> _userServiceSubscriptionRepository;
         private readonly IRepository<ServicePrice> _servicePriceRepository;
@@ -30,7 +30,7 @@ namespace Jueci.ApiService.UserAuth.Sales
             IRepository<UserInfo> userRepository, 
             IRepository<AgentInfo> agentRepository, 
             IRepository<UserServiceSubscriptionInfo, string> userServiceSubscriptionRepository,
-            IRepository<UserRecharge, string> userRechargeRepository)
+            IRepository<UserRecharge, string> userRechargeRepository, IUnitOfWorkManager unitOfWorkManager)
         {
             _userServiceAuthRepository = userServiceAuthRepository;
             _servicePriceRepository = servicePriceRepository;
@@ -38,6 +38,7 @@ namespace Jueci.ApiService.UserAuth.Sales
             _agentRepository = agentRepository;
             _userServiceSubscriptionRepository = userServiceSubscriptionRepository;
             _userRechargeRepository = userRechargeRepository;
+            _unitOfWorkManager = unitOfWorkManager;
         }
 
         public async Task<UserCanPurchaseCode> UserCanbyPruductService(UserInfo user, int servicePriceId)
@@ -67,8 +68,7 @@ namespace Jueci.ApiService.UserAuth.Sales
             return UserCanPurchaseCode.CanPurchaseService;
         }
 
-        [UnitOfWork]
-        public async Task PurchaseSoftService(UserInfo userInfo, SalesInfoModel model, bool isAgent)
+        public async Task<bool> PurchaseSoftService(UserInfo userInfo, SalesInfoModel model, bool isAgent)
         {
             UserInfo salesMan = null;
             var servicePrice = await _servicePriceRepository.FirstOrDefaultAsync(p => p.Id == model.PId);
@@ -78,17 +78,20 @@ namespace Jueci.ApiService.UserAuth.Sales
                 Debug.Assert(model.AgentId != null, "model.AgentId != null");
                 salesMan = await _userRepository.GetAsync(model.AgentId.Value);
                 var preSalesFund = salesMan.Fund;
-                salesMan.Fund -= model.Cost;
+                var agentSurplusFund = salesMan.Fund - model.Cost;
+
+                if (agentSurplusFund < 0)
+                {
+                    throw new InsufficientFundsException(string.Format("您当前的余额为{0},余额已不足，无法完成销售，请充值后再销售!", preSalesFund.ToString("C")));
+                }
+                 
                 var agentInfo = await _agentRepository.GetAsync(model.AgentId.Value);
                 if (!agentInfo.AgentIsActive)
                 {
                     throw new AgentNoActiveException("您的代理商权限被冻结，无法进行销售活动，请与客服联系！");
                 }
-                if (salesMan.Fund < 0)
-                {
-                    throw new InsufficientFundsException(string.Format("您当前的余额为{0},余额已不足，无法完成销售，请充值后再销售!", preSalesFund.ToString("C")));
-                }
-              
+
+                salesMan.Fund = agentSurplusFund;
             }
 
             //获取之前购买的记录，如果为空，则直接购买
@@ -147,37 +150,42 @@ namespace Jueci.ApiService.UserAuth.Sales
             {        
                 userServiceSubscriptionInfo.AdminId = model.AdminId;
             }
-
-            try
+            using (var uow = _unitOfWorkManager.Begin())
             {
-                if (isNewPurchase)
+                try
                 {
-                    await _userServiceAuthRepository.InsertAsync(userServiceAuth);
-                }
-                else
-                {
-                    await _userServiceAuthRepository.UpdateAsync(userServiceAuth);
-                }
-                if (historyEffectiveOrder != null && historyEffectiveOrder.Count > 0)
-                {
-                    foreach (var historyOrder in historyEffectiveOrder)
+                    if (isNewPurchase)
                     {
-                        historyOrder.State = OrderState.Legal;
-                        historyOrder.UpdateTime = DateTime.Now;
-                        await _userServiceSubscriptionRepository.UpdateAsync(historyOrder);
+                        await _userServiceAuthRepository.InsertAsync(userServiceAuth);
                     }
+                    else
+                    {
+                        await _userServiceAuthRepository.UpdateAsync(userServiceAuth);
+                    }
+                    if (historyEffectiveOrder != null && historyEffectiveOrder.Count > 0)
+                    {
+                        foreach (var historyOrder in historyEffectiveOrder)
+                        {
+                            historyOrder.State = OrderState.Legal;
+                            historyOrder.UpdateTime = DateTime.Now;
+                            await _userServiceSubscriptionRepository.UpdateAsync(historyOrder);
+                        }
+                    }
+                    if (isAgent)
+                    {
+                        await _userRepository.UpdateAsync(salesMan);
+                    }
+                    await _userServiceSubscriptionRepository.InsertAsync(userServiceSubscriptionInfo);
+                    await uow.CompleteAsync();
+                    return true;
                 }
-                if (isAgent)
+                catch (Exception ex)
                 {
-                    await _userRepository.UpdateAsync(salesMan);
+                    LogHelper.Logger.Error(string.Format("销售失败，服务器内部错误,单号为{0}", userServiceSubscriptionInfo.Id), ex);
+                    throw ex;
                 }
-                await _userServiceSubscriptionRepository.InsertAsync(userServiceSubscriptionInfo);
             }
-            catch (Exception ex)
-            {
-                LogHelper.Logger.Error(string.Format("销售失败，服务器内部错误,单号为{0}", userServiceSubscriptionInfo.Id), ex);
-                throw ex;
-            }
+
 
         }
 

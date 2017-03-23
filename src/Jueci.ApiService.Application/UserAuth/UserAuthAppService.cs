@@ -5,6 +5,7 @@ using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Jueci.ApiService.Common;
 using Jueci.ApiService.Common.Enums;
+using Jueci.ApiService.Common.Exceptions;
 using Jueci.ApiService.UserAuth.Dtos;
 using Jueci.ApiService.UserAuth.Entities;
 using Jueci.ApiService.UserAuth.Sales;
@@ -102,8 +103,15 @@ namespace Jueci.ApiService.UserAuth
 
                     try
                     {
-                        await _salesSoftwareProcessor.PurchaseSoftService(userInfo, input.MapTo<SalesInfoModel>(), false);
-                        return new ResultMessage<SalesResultMessage>(ResultCode.Success, "Success", new SalesResultMessage(SalesResultType.Success));
+                        try
+                        {
+                            await _salesSoftwareProcessor.PurchaseSoftService(userInfo, input.MapTo<SalesInfoModel>(), false);
+                            return new ResultMessage<SalesResultMessage>(ResultCode.Success, "Success", new SalesResultMessage(SalesResultType.Success));
+                        }
+                        catch (InsufficientFundsException e)
+                        {
+                            return new ResultMessage<SalesResultMessage>(ResultCode.Fail, "Fail", new SalesResultMessage(SalesResultType.InsufficientFunds,e.Message));
+                        }
                     }
                     catch (Exception e)
                     {

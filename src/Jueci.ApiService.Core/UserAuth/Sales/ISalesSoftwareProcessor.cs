@@ -18,8 +18,8 @@ namespace Jueci.ApiService.UserAuth.Sales
         /// <returns></returns>
         Task<UserCanPurchaseCode> UserCanbyPruductService(UserInfo user, int servicePriceId);
 
-      //  Task<bool> PurchaseSoftwareService(UserInfo user, SalesInfoModel model, int salesManId, UserRole userRole);
-        Task PurchaseSoftService(UserInfo userInfo, SalesInfoModel model, bool isAgent);
+        //  Task<bool> PurchaseSoftwareService(UserInfo user, SalesInfoModel model, int salesManId, UserRole userRole);
+        Task<bool> PurchaseSoftService(UserInfo userInfo, SalesInfoModel model, bool isAgent);
 
         bool TestProductValues(int uid,int pid,string subscriptionOrderId, decimal productValue, decimal salesCost, out string msg);
     }
