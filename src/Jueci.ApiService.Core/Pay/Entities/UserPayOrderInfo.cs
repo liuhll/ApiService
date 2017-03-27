@@ -1,17 +1,16 @@
-﻿using Abp.AutoMapper;
-using Abp.Runtime.Validation;
-using Jueci.ApiService.Base.Dtos;
+﻿using System;
+using Abp.Domain.Entities;
 using Jueci.ApiService.Common.Enums;
-using Jueci.ApiService.Pay.Entities;
 
-namespace Jueci.ApiService.Pay.Dtos
+namespace Jueci.ApiService.Pay.Entities
 {
-    /// <summary>
-    /// 创建支付订单输入参数
-    /// </summary>
-    [AutoMap(typeof(UserPayOrderInfo))]
-    public class PayOrderInfoInput : BasicDto
+    public class UserPayOrderInfo : Entity<string>
     {
+        public UserPayOrderInfo()
+        {
+            CreateTime = DateTime.Now;
+        }
+
         /// <summary>
         /// 用户Id
         /// </summary>
@@ -35,21 +34,34 @@ namespace Jueci.ApiService.Pay.Dtos
         /// <summary>
         /// 支付类型
         /// </summary>
-        public string PayType { get; set; }
+        public PayType PayType { get; set; }
 
         /// <summary>
         /// 支付模式
         /// </summary>
-        public string PayMode { get; set; }
+        public PayMode PayMode { get; set; }
 
         /// <summary>
         /// 备注
         /// </summary>
         public string Remarks { get; set; }
 
-        /// <summary>
-        /// AppCode 
-        /// </summary>
-        public string AppCode { get; set; }
+        public string GoodsName { get; set; }
+
+        public string PayAppId { get; set; }
+
+        public string PayOrderId { get; set; }
+
+        public string PayExtendInfo { get; set; }
+
+        public string PayState { get; set; }
+
+        public int State { get; set; }
+
+        public DateTime CreateTime { get; set; }
+
+        public DateTime? UpdateTime { get; set; }
+
+
     }
 }

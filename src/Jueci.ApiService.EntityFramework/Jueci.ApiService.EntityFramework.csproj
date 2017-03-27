@@ -113,6 +113,7 @@
     <Compile Include="Mappings\AppkeyMap.cs" />
     <Compile Include="Mappings\ServiceInfoMap.cs" />
     <Compile Include="Mappings\ServicePriceMap.cs" />
+    <Compile Include="Mappings\UserPayOrderInfoMap.cs" />
     <Compile Include="Mappings\UserRechargeMap.cs" />
     <Compile Include="Mappings\UserServiceAuthInfoMap.cs" />
     <Compile Include="Mappings\UserServiceSubscriptionInfoMap.cs" />

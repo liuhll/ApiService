@@ -3,6 +3,7 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using Abp.EntityFramework;
 using Jueci.ApiService.ApiAuthorization.Entities;
 using Jueci.ApiService.Mappings;
+using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.UserAuth.Entities;
 
 namespace Jueci.ApiService.EntityFramework
@@ -31,6 +32,8 @@ namespace Jueci.ApiService.EntityFramework
         public virtual IDbSet<UserRecharge> UserRecharges { get; set; }
 
         public virtual IDbSet<ServiceInfo> ServiceInfos { get; set; }
+
+        public virtual IDbSet<UserPayOrderInfo> UserPayOrderInfos { get; set; }
 
         /* NOTE: 
          *   Setting "Default" to base class helps us when working migration commands on Package Manager Console.
@@ -66,6 +69,7 @@ namespace Jueci.ApiService.EntityFramework
             modelBuilder.Configurations.Add(new UserServiceAuthInfoMap());
             modelBuilder.Configurations.Add(new UserRechargeMap());
             modelBuilder.Configurations.Add(new ServiceInfoMap());
+            modelBuilder.Configurations.Add(new UserPayOrderInfoMap());
         }
     }
 }

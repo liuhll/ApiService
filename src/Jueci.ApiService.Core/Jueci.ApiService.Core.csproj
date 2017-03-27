@@ -96,6 +96,8 @@
     <Compile Include="ApiServiceConsts.cs" />
     <Compile Include="ApiServiceCoreModule.cs" />
     <Compile Include="ApiAuthorization\JeuciAuthorizeAttribute.cs" />
+    <Compile Include="Common\Enums\Appcode.cs" />
+    <Compile Include="Common\Enums\Pay.cs" />
     <Compile Include="Common\Enums\PurchaseType.cs" />
     <Compile Include="Common\Enums\ResultCode.cs" />
     <Compile Include="Common\Enums\SalesResultType.cs" />
@@ -106,9 +108,18 @@
     <Compile Include="Common\Exceptions\InsufficientFundsException.cs" />
     <Compile Include="Common\ResultMessage.cs" />
     <Compile Include="Common\Tools\ConfigHelper.cs" />
+    <Compile Include="Common\Tools\ConvertHelper.cs" />
     <Compile Include="Common\Tools\DateTimeHelper.cs" />
     <Compile Include="Common\Tools\EncryptionHelper.cs" />
+    <Compile Include="Common\Tools\OrderHelper.cs" />
     <Compile Include="Common\Tools\ToolHelper.cs" />
+    <Compile Include="Pay\Entities\UserPayOrderInfo.cs" />
+    <Compile Include="Pay\IPayConfigLoader.cs" />
+    <Compile Include="Pay\IPayService.cs" />
+    <Compile Include="Pay\Models\Alipay.cs" />
+    <Compile Include="Pay\Models\BasicPay.cs" />
+    <Compile Include="Pay\Models\WxPay.cs" />
+    <Compile Include="Pay\PayConfigLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserAuth\Entities\AgentInfo.cs" />
     <Compile Include="UserAuth\Entities\AgentRole.cs" />

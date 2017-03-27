@@ -1,0 +1,52 @@
+﻿<?xml version="1.0"?>
+<config>
+  <wxpay>
+    <app SID="1" AppCode="SSCZYZJ" Name="时时彩掌赢专家">
+      <appId>wx91b8341263b6b57f</appId>
+      <mchId>1385648302</mchId>
+      <key>s8eDjsjddskSDCDFassa1230wks9wkSA</key>
+      <appSecret>66a88b7c2e9d04dc3fe8985dfe0de844</appSecret>
+      <notifyUrl>http://pay.camew.com/notify.ashx</notifyUrl>
+    </app>
+
+    <app SID="2" AppCode="PKSZYZJ" Name="北京PK10掌赢专家">
+      <appId>wxc111f9c510a97702</appId>
+      <mchId>1385648302</mchId>
+      <key>s8eDjsjddskSDCDFassa1230wks9wkSA</key>
+      <appSecret>66a88b7c2e9d04dc3fe8985dfe0de844</appSecret>
+      <notify_Url>http://pay.camew.com/notify.ashx</notify_Url>
+    </app>
+
+    <app AppCode="ZYZJ" Name="掌赢专家">
+      <appId>wxf8b0575e48e13ec5</appId>
+      <mchId>1385648302</mchId>
+      <key>s8eDjsjddskSDCDFassa1230wks9wkSA</key>
+      <appSecret>66a88b7c2e9d04dc3fe8985dfe0de844</appSecret>
+      <notify_Url>http://pay.camew.com/notify.ashx</notify_Url>
+    </app>
+  </wxpay>
+
+  <alipay>
+    <app AppCode="SSCZYZJ" Name="掌赢专家">
+      <appId>2016082801815123</appId>
+      <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
+      <notify_Url>http://pay.camew.com/alinotify.ashx</notify_Url>
+      <PublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB</PublicKey>
+      <PrivateKey>
+        MIICXAIBAAKBgQCbgEgtHhfs8ilSk6hrqkkib/zCLZ87+NG2nwyxpfp3I6bUATU2
+        AHOxKWLCIKR/Y26hqV02eaT1j8GzJ/mueYKFTT+SU5mwL7bapOsAYjzGGTmT58bC
+        buHRFO9x9PwUTIxyJWroea2enLb2162npiTwKbpFMPlv8b14JOMSAN1tkwIDAQAB
+        AoGAXgfunUnLUf8FueeMOr7YRrjNcWZBGfTWa8Y12N7zXEP0x9KLKMKRMxpBm/49
+        OsMXzS4rLZvVgqCRkxKjSzwzDhNdAvDshhbNw2M1iM1BGAdZbpR2kS2M7vX6ttCZ
+        m91+kwHe7NRPMVIr2HPCWBIy63TcuVNFrteA9shKRhQNKvECQQDJzrebxtroxHQv
+        jheEo9bJ1igBAh8L9cEz1CFHlwffTHTPQaW98qB9vfI3zhLDbMFv0BMWyQIcMed1
+        j16BNXV9AkEAxUI51PXj3hslqS1XBm/HI/gqCdmfL9MjEmJAQtT3mzb38j398SBp
+        xTnvPsqCzsc8aM4U53yMzrZGdEcqt76cTwJAPg3Kd6QV/C0sbNMMeETI7xdjBaxZ
+        T5wp5H3+Hb1bNlaUNIbDKD1LDF8z8+Tx8BWpBXC97euxMmpF+egz7xc5IQJBAMLO
+        PnLUSy9DvBOxVSpkJVSedlW393+xkgdLxI6757P/uyoekrUY/5vpNR7bvAcdt8kB
+        DJ/33s8eL8IRrlw7//0CQBzn/nsL/4a3JenljHD+4ki9J9vv5qTAV6xZkbKRfdnu
+        MI1ZhFDB03pl4y7030fJlud+wK0uTYXLN3ILnhSYbaY=
+      </PrivateKey>
+    </app>
+  </alipay>
+</config>
