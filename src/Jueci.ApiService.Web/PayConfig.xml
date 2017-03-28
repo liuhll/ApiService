@@ -14,15 +14,23 @@
       <mchId>1385648302</mchId>
       <key>s8eDjsjddskSDCDFassa1230wks9wkSA</key>
       <appSecret>66a88b7c2e9d04dc3fe8985dfe0de844</appSecret>
-      <notify_Url>http://pay.camew.com/notify.ashx</notify_Url>
+      <notifyUrl>http://pay.camew.com/notify.ashx</notifyUrl>
     </app>
 
     <app AppCode="ZYZJ" Name="掌赢专家">
       <appId>wxf8b0575e48e13ec5</appId>
-      <mchId>1385648302</mchId>
-      <key>s8eDjsjddskSDCDFassa1230wks9wkSA</key>
+      <mchId>1420785902</mchId>
+      <key>s8eDjsjddskSDCDFassa1230wks54123</key>
       <appSecret>66a88b7c2e9d04dc3fe8985dfe0de844</appSecret>
-      <notify_Url>http://pay.camew.com/notify.ashx</notify_Url>
+      <notifyUrl>http://pay.camew.com/notify.ashx</notifyUrl>
+    </app>
+
+    <app AppCode="WECHAT" Name="微信公众号">
+      <appId>wx8ff8f76e8ecd0d57</appId>
+      <mchId>1387201302</mchId>
+      <key>s8eDjsjddskSDCDFassa1230wksdf321</key>
+      <appSecret>9870aa51fe956cd437cbfebc9cd736ab</appSecret>
+      <notifyUrl>http://pay.camew.com/notify.ashx</notifyUrl>   
     </app>
   </wxpay>
 
@@ -30,7 +38,7 @@
     <app AppCode="SSCZYZJ" Name="掌赢专家">
       <appId>2016082801815123</appId>
       <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
-      <notify_Url>http://pay.camew.com/alinotify.ashx</notify_Url>
+      <notifyUrl>http://pay.camew.com/alinotify.ashx</notifyUrl>
       <PublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB</PublicKey>
       <PrivateKey>
         MIICXAIBAAKBgQCbgEgtHhfs8ilSk6hrqkkib/zCLZ87+NG2nwyxpfp3I6bUATU2

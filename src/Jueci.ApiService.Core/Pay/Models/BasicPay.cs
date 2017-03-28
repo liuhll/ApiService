@@ -4,7 +4,7 @@ namespace Jueci.ApiService.Pay.Models
 {
     public abstract class BasicPay
     {
-        public AppCode AppCode { get; set; }
+        public string AppCode { get; set; }
 
         public string Name { get; set; }
 

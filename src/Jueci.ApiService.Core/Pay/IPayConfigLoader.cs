@@ -9,8 +9,8 @@ namespace Jueci.ApiService.Pay
     {
         IList<Models.BasicPay> GetPayApps();
 
-        T GetPayConfigInfo<T>(PayType payType, AppCode appCode) where T : BasicPay;
+        T GetPayConfigInfo<T>(PayType payType, string appCode) where T : BasicPay;
 
-        BasicPay GetPayConfigInfo(PayType payType, AppCode appCode);
+        BasicPay GetPayConfigInfo(PayType payType, string appCode);
     }
 }

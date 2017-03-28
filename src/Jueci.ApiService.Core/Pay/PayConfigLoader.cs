@@ -33,10 +33,10 @@ namespace Jueci.ApiService.Pay
             Debug.Assert(wxpayNode != null, "wxpayNode != null");
             foreach (XmlNode node in wxpayNode.ChildNodes)
             {
-                var wxpay = new WxPay()
+                var wxpay = new Models.WxPay()
                 {
                     AppId = node.SelectSingleNode("./appId")?.InnerText,
-                    AppCode = (AppCode)Enum.Parse(typeof(AppCode), node.Attributes["AppCode"]?.InnerText) ,
+                    AppCode = node.Attributes["AppCode"]?.InnerText,
                     AppSecret = node.SelectSingleNode("./appSecret")?.InnerText,
                     Key = node.SelectSingleNode("./key")?.InnerText,
                     MchId = node.SelectSingleNode("./mchId")?.InnerText,
@@ -56,7 +56,7 @@ namespace Jueci.ApiService.Pay
                     Name = node.Attributes["Name"]?.InnerText,
                     NotifyUrl = node.SelectSingleNode("./notifyUrl")?.InnerText,
                     AppId = node.SelectSingleNode("./appId")?.InnerText,
-                    AppCode = (AppCode)Enum.Parse(typeof(AppCode), node.Attributes["AppCode"]?.InnerText),
+                    AppCode = node.Attributes["AppCode"]?.InnerText,
                 };
                 payAppConfigs.Add(alipay);
             }
@@ -69,15 +69,15 @@ namespace Jueci.ApiService.Pay
             return payAppConfigs;
         }
 
-        public T GetPayConfigInfo<T>(PayType payType, AppCode appCode) where T : BasicPay
+        public T GetPayConfigInfo<T>(PayType payType, string appCode) where T : BasicPay
         {
             var payconfig = GetPayConfigInfo(payType, appCode);
             return (T)payconfig;
         }
 
-        public BasicPay GetPayConfigInfo(PayType payType, AppCode appCode)
+        public BasicPay GetPayConfigInfo(PayType payType, string appCode)
         {
-            var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode == appCode);
+            var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode.Equals(appCode,StringComparison.OrdinalIgnoreCase));
             if (payconfig == null)
             {
                 LogHelper.Logger.Error(string.Format("不存在指定的支付配置信息;PayType:{0},Appcode:{1}", payType, appCode));

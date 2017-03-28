@@ -50,6 +50,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Windsor.3.3.0\lib\net45\Castle.Windsor.dll</HintPath>
     </Reference>
+    <Reference Include="LitJson, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\LitJson.0.7.0\lib\LitJson.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -82,6 +86,7 @@
     <Reference Include="System.Net.Http.Formatting, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -106,20 +111,32 @@
     <Compile Include="Common\Exceptions\AgentNoActiveException.cs" />
     <Compile Include="Common\Exceptions\ApiAuthorizeException.cs" />
     <Compile Include="Common\Exceptions\InsufficientFundsException.cs" />
+    <Compile Include="Common\Exceptions\OrderException.cs" />
     <Compile Include="Common\ResultMessage.cs" />
     <Compile Include="Common\Tools\ConfigHelper.cs" />
     <Compile Include="Common\Tools\ConvertHelper.cs" />
     <Compile Include="Common\Tools\DateTimeHelper.cs" />
     <Compile Include="Common\Tools\EncryptionHelper.cs" />
+    <Compile Include="Common\Tools\IpAddressHelper.cs" />
+    <Compile Include="Common\Tools\NonceHelper.cs" />
     <Compile Include="Common\Tools\OrderHelper.cs" />
     <Compile Include="Common\Tools\ToolHelper.cs" />
     <Compile Include="Pay\Entities\UserPayOrderInfo.cs" />
     <Compile Include="Pay\IPayConfigLoader.cs" />
     <Compile Include="Pay\IPayService.cs" />
+    <Compile Include="Pay\Lib\AliPayConfig.cs" />
+    <Compile Include="Pay\Lib\AlipayData.cs" />
+    <Compile Include="Pay\Lib\HttpService.cs" />
+    <Compile Include="Pay\Lib\WxPayConfig.cs" />
+    <Compile Include="Pay\Lib\WxPayData.cs" />
+    <Compile Include="Pay\Lib\WxPayException.cs" />
     <Compile Include="Pay\Models\Alipay.cs" />
     <Compile Include="Pay\Models\BasicPay.cs" />
+    <Compile Include="Pay\Models\ServiceOrder.cs" />
     <Compile Include="Pay\Models\WxPay.cs" />
     <Compile Include="Pay\PayConfigLoader.cs" />
+    <Compile Include="Pay\WxPay\IWxPayService.cs" />
+    <Compile Include="Pay\WxPay\WxPayService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UserAuth\Entities\AgentInfo.cs" />
     <Compile Include="UserAuth\Entities\AgentRole.cs" />
