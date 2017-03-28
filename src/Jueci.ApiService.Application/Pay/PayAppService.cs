@@ -86,13 +86,13 @@ namespace Jueci.ApiService.Pay
         }
 
         [UnitOfWork]
-        public ResultMessage<WxPayOrderInfoOutput> WxPayUnifiedOrder(WxPayOrderInput input)
+        public ResultMessage<WxPaySignOptionsOutput> WxPayUnifiedOrder(WxPayOrderInput input)
         {
             var userInfo = _userRepository.Get(input.Uid);
             if (userInfo == null)
             {
                 LogHelper.Logger.Error(string.Format("不存在Id为{0}的用户", input.Uid));
-                return new ResultMessage<WxPayOrderInfoOutput>(ResultCode.Fail, string.Format("不存在Id为{0}的用户", input.Uid));
+                return new ResultMessage<WxPaySignOptionsOutput>(ResultCode.Fail, string.Format("不存在Id为{0}的用户", input.Uid));
             }
 
             var payOrderInfoInput = input.MapTo<PayOrderInfoInput>();
@@ -115,7 +115,7 @@ namespace Jueci.ApiService.Pay
             {
                 if (userInfo.WeChat == null)
                 {
-                    return new ResultMessage<WxPayOrderInfoOutput>(ResultCode.Fail, "id为{0}的用户还没有绑定微信公众号，无法使用微信公众号支付!");
+                    return new ResultMessage<WxPaySignOptionsOutput>(ResultCode.Fail, "id为{0}的用户还没有绑定微信公众号，无法使用微信公众号支付!");
                 }
                 serviceOrder.openid = userInfo.WeChat;
             }
@@ -125,13 +125,10 @@ namespace Jueci.ApiService.Pay
             payOrderInfo.State = 1;
             payOrderInfo.UpdateTime = DateTime.Now;
             _userPayOrderRepository.Insert(payOrderInfo);
-            var output = new WxPayOrderInfoOutput()
-            {
-                PrepayId = wxpayData.GetValue("prepay_id").ToString(),
-                OrderId = payOrderInfo.Id,
-            };
+
+            var output = _wxPayService.GetPaySign(payConfig,payOrderInfo, wxpayData);
              
-            return new ResultMessage<WxPayOrderInfoOutput>(ResultCode.Success,"创建支付订单成功",output);
+            return new ResultMessage<WxPaySignOptionsOutput>(ResultCode.Success,"创建支付订单，且微信统下单成功", output.MapTo<WxPaySignOptionsOutput>());
 
         }
 

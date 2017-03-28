@@ -109,7 +109,7 @@
     <Compile Include="ApiServiceAppServiceBase.cs" />
     <Compile Include="Base\Dtos\BasicDto.cs" />
     <Compile Include="Pay\Dtos\PayOrderInfoInput.cs" />
-    <Compile Include="Pay\Dtos\WxPayOrderInfoOutput.cs" />
+    <Compile Include="Pay\Dtos\WxPaySignOptionsOutput.cs" />
     <Compile Include="Pay\Dtos\WxPayOrderInput.cs" />
     <Compile Include="Pay\IPayAppService.cs" />
     <Compile Include="Pay\PayAppService.cs" />

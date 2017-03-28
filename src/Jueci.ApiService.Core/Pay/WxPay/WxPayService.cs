@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Abp.Logging;
+using Jueci.ApiService.Common.Enums;
 using Jueci.ApiService.Common.Exceptions;
+using Jueci.ApiService.Common.Tools;
 using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.Pay.Lib;
 using Jueci.ApiService.Pay.Models;
@@ -13,7 +15,7 @@ namespace Jueci.ApiService.Pay.WxPay
 {
     public class WxPayService : IWxPayService
     {
-        public WxPayData UnifiedOrder(ServiceOrder serviceOrder,Models.WxPay wxPayConfig, int timeOut = 10)
+        public WxPayData UnifiedOrder(ServiceOrder serviceOrder, Models.WxPay wxPayConfig, int timeOut = 10)
         {
             string url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
 
@@ -55,7 +57,7 @@ namespace Jueci.ApiService.Pay.WxPay
                     throw new OrderException("下单失败，请稍后重试!" + result.GetValue("return_msg"));
                 }
 
-              //  result.SetValue("orderid", wxPayData.GetValue("out_trade_no"));
+                //  result.SetValue("orderid", wxPayData.GetValue("out_trade_no"));
 
                 return result;
             }
@@ -66,6 +68,48 @@ namespace Jueci.ApiService.Pay.WxPay
             }
 
 
+        }
+
+        public WxPaySignOptions GetPaySign(Models.WxPay payConfig, UserPayOrderInfo payOrderInfo, WxPayData wxPayData)
+        {
+
+            var timestamp = DateTimeHelper.DateTimeToUnixTimestamp(DateTime.Now).ToString();
+
+            WxPayData data = new WxPayData(payConfig);
+            data.SetValue("appId", payConfig.AppId);
+            data.SetValue("timeStamp", timestamp);
+            data.SetValue("nonceStr", NonceHelper.GenerateNonceStr());
+            //data.SetValue("package", package);
+
+            switch (payOrderInfo.PayMode)
+            {
+                case PayMode.Mobile:
+                    data.SetValue("package", string.Format("prepay_id={0}", wxPayData.GetValue("prepay_id")));
+                    data.SetValue("signType", "MD5");
+                    break;
+                case PayMode.App:
+                    data.SetValue("package", "Sign=WXPay");
+                    data.SetValue("prepayid", wxPayData.GetValue("prepay_id"));
+                    break;
+                default:
+                    throw new Exception("指定的支付方式错误！请核对您的支付参数");
+                    
+            }
+
+            var encryStr = data.MakeSign();
+
+            // LogHelper.Logger.Info("支付API接口加密后的串为:" + encryStr);
+            return new WxPaySignOptions()
+            {
+                Appid = payConfig.AppId,
+                Noncestr = data.GetValue("nonceStr").ToString(),
+                OrderId = payOrderInfo.Id,
+                Package = data.GetValue("package").ToString(),
+                PrepayId = wxPayData.GetValue("prepay_id").ToString(),
+                PartnerId = payOrderInfo.PayMode == PayMode.App ? payConfig.MchId : string.Empty,
+                Sign = encryStr,
+                Timestamp = data.GetValue("timeStamp").ToString(),
+            };
         }
 
         private void CheckParams(ServiceOrder serviceOrder)

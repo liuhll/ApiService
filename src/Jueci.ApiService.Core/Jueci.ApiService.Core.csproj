@@ -134,6 +134,7 @@
     <Compile Include="Pay\Models\BasicPay.cs" />
     <Compile Include="Pay\Models\ServiceOrder.cs" />
     <Compile Include="Pay\Models\WxPay.cs" />
+    <Compile Include="Pay\Models\WxPaySignOptions.cs" />
     <Compile Include="Pay\PayConfigLoader.cs" />
     <Compile Include="Pay\WxPay\IWxPayService.cs" />
     <Compile Include="Pay\WxPay\WxPayService.cs" />

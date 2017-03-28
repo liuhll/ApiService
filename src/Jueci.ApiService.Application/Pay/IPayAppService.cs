@@ -19,7 +19,7 @@ namespace Jueci.ApiService.Pay
         /// </summary>
         /// <param name="input">支付订单参数</param>
         /// <remarks>创建一个支付订单，并调用微信统一下单API接口，并返回预付单信息</remarks>
-        ResultMessage<WxPayOrderInfoOutput> WxPayUnifiedOrder(WxPayOrderInput input);
+        ResultMessage<WxPaySignOptionsOutput> WxPayUnifiedOrder(WxPayOrderInput input);
 
 
     }
