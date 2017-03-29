@@ -9,6 +9,6 @@ namespace Jueci.ApiService.Pay.WxPay
     {
         WxPayData UnifiedOrder(ServiceOrder serviceOrder, Models.WxPay wxPayConfig, int timeOut = 10);
 
-        WxPaySignOptions GetPaySign(Models.WxPay payConfig, UserPayOrderInfo payOrderInfo,WxPayData wxPayData);
+        WxPaySignOptionsBasic GetPaySign(Models.WxPay payConfig, UserPayOrderInfo payOrderInfo,WxPayData wxPayData);
     }
 }

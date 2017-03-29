@@ -10,7 +10,7 @@ namespace Jueci.ApiService.Pay.Dtos
     /// 创建支付订单输入参数
     /// </summary>
     [AutoMap(typeof(UserPayOrderInfo))]
-    public class PayOrderInfoInput 
+    public class PayOrderInfoDto 
     {
         /// <summary>
         /// 用户Id

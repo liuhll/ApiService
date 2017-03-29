@@ -64,13 +64,13 @@ namespace Jueci.ApiService.Pay.WxPay
             catch (Exception e)
             {
                 LogHelper.Logger.Error("调用统一下单接口失败,原因:" + e.Message);
-                throw new OrderException("由于网络原因下单失败,请重试");
+                throw new OrderException("下单失败,原因" + e.Message);
             }
 
 
         }
 
-        public WxPaySignOptions GetPaySign(Models.WxPay payConfig, UserPayOrderInfo payOrderInfo, WxPayData wxPayData)
+        public WxPaySignOptionsBasic GetPaySign(Models.WxPay payConfig, UserPayOrderInfo payOrderInfo, WxPayData wxPayData)
         {
 
             var timestamp = DateTimeHelper.DateTimeToUnixTimestamp(DateTime.Now).ToString();
@@ -99,14 +99,27 @@ namespace Jueci.ApiService.Pay.WxPay
             var encryStr = data.MakeSign();
 
             // LogHelper.Logger.Info("支付API接口加密后的串为:" + encryStr);
-            return new WxPaySignOptions()
+            if (payOrderInfo.PayMode == PayMode.App)
+            {
+                return new WxPaySignAppOptions()
+                {
+                    Appid = payConfig.AppId,
+                    Noncestr = data.GetValue("nonceStr").ToString(),
+                    OrderId = payOrderInfo.Id,
+                    Package = data.GetValue("package").ToString(),
+                    PrepayId = wxPayData.GetValue("prepay_id").ToString(),
+                    PartnerId = payConfig.MchId,
+                    Sign = encryStr,
+                    Timestamp = data.GetValue("timeStamp").ToString(),
+                };
+            }
+            return new WxPaySignMobileOptions()
             {
                 Appid = payConfig.AppId,
                 Noncestr = data.GetValue("nonceStr").ToString(),
                 OrderId = payOrderInfo.Id,
                 Package = data.GetValue("package").ToString(),
                 PrepayId = wxPayData.GetValue("prepay_id").ToString(),
-                PartnerId = payOrderInfo.PayMode == PayMode.App ? payConfig.MchId : string.Empty,
                 Sign = encryStr,
                 Timestamp = data.GetValue("timeStamp").ToString(),
             };

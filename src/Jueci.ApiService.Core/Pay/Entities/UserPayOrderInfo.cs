@@ -58,6 +58,8 @@ namespace Jueci.ApiService.Pay.Entities
 
         public int State { get; set; }
 
+        public string Attach { get; set; }
+
         public DateTime CreateTime { get; set; }
 
         public DateTime? UpdateTime { get; set; }

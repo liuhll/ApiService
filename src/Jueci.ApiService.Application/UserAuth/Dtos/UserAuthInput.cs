@@ -47,12 +47,12 @@ namespace Jueci.ApiService.UserAuth.Dtos
         public decimal Cost { get; set; }
 
         /// <summary>
-        /// 产品价值
+        /// 建议价
         /// </summary>
         public decimal? SuggestCost { get; set; }
 
         /// <summary>
-        /// 产品价值计算来源单号
+        /// 建议价计算来源单号
         /// </summary>
         public string SubscriptionOrderId { get; set; }
 

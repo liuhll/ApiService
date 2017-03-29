@@ -6,17 +6,14 @@ using System.Threading.Tasks;
 
 namespace Jueci.ApiService.Pay.Models
 {
-    public class WxPaySignOptions
+    public abstract class WxPaySignOptionsBasic
     {
         /// <summary>
         /// 微信应用Id
         /// </summary>
         public string Appid { get; set; }
 
-        /// <summary>
-        /// 商家合作号Id
-        /// </summary>
-        public string PartnerId { get; set; }
+       
 
         /// <summary>
         /// 预支付交易会话ID

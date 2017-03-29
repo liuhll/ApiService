@@ -3,8 +3,8 @@ using Jueci.ApiService.Base.Dtos;
 
 namespace Jueci.ApiService.Pay.Dtos
 {
-    [AutoMap(typeof(PayOrderInfoInput))]
-    public class WxPayOrderInput : BasicDto
+    [AutoMap(typeof(PayOrderInfoDto))]
+    public class PayOrderInput : BasicDto
     {
         /// <summary>
         /// 用户Id
@@ -17,6 +17,16 @@ namespace Jueci.ApiService.Pay.Dtos
         public decimal Cost { get; set; }
 
         /// <summary>
+        /// 建议价
+        /// </summary>
+        public decimal? SuggestCost { get; set; }
+
+        /// <summary>
+        /// 建议价计算来源单号
+        /// </summary>
+        public string SubscriptionOrderId { get; set; }
+
+        /// <summary>
         /// 0为用户充值，其他数值则对应响应的服务Id
         /// </summary>
         public int GoodsType { get; set; }
@@ -26,6 +36,7 @@ namespace Jueci.ApiService.Pay.Dtos
         /// </summary>
         public int? GoodsId { get; set; }
 
+        public string PayTypeStr { get; set; }
 
         /// <summary>
         /// 支付模式
