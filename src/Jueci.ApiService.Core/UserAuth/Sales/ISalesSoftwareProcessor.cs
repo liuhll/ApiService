@@ -22,5 +22,7 @@ namespace Jueci.ApiService.UserAuth.Sales
         Task<bool> PurchaseSoftService(UserInfo userInfo, SalesInfoModel model, bool isAgent);
 
         bool TestProductValues(int uid,int pid,string subscriptionOrderId, decimal productValue, decimal salesCost, out string msg);
+
+        Task PurchaseSoftServiceOnline(UserInfo userInfo, SalesInfoModel salesInfo);
     }
 }

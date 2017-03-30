@@ -11,6 +11,8 @@ namespace Jueci.ApiService.Pay
 
         T GetPayConfigInfo<T>(PayType payType, string appCode) where T : BasicPay;
 
+        T GetPayConfigInfoByAppid<T>(PayType payType, string appid) where T : BasicPay;
+
         BasicPay GetPayConfigInfo(PayType payType, string appCode);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using Abp.AutoMapper;
 using Abp.Domain.Repositories;
 using Abp.Domain.Uow;
@@ -72,7 +73,7 @@ namespace Jueci.ApiService.Pay
                 {
                     if (!payOrderInput.SuggestCost.HasValue)
                     {
-                        throw new Exception(string.Format("基于订单{0}升级，则相应的建议价不能为空",payOrderInput.SubscriptionOrderId));
+                        throw new Exception(string.Format("基于订单{0}升级，则相应的建议价不能为空", payOrderInput.SubscriptionOrderId));
                     }
                     JObject jObject = new JObject();
                     jObject["SubscriptionOrderId"] = payOrderInput.SubscriptionOrderId;
@@ -136,6 +137,8 @@ namespace Jueci.ApiService.Pay
             }
         }
 
+        
+
         private ResultMessage<UnifiedPayOrderOutput> WxUnifiedPayOrder(BasicPay payConfig, UserPayOrderInfo payOrderInfo, UserInfo userInfo)
         {
             var wxpayConfig = (Models.WxPay)payConfig;
@@ -153,7 +156,7 @@ namespace Jueci.ApiService.Pay
             {
                 if (userInfo.WeChat == null)
                 {
-                    return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Fail, string.Format("id为{0}的用户还没有绑定微信公众号，无法使用微信公众号支付!",userInfo.Id));
+                    return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Fail, string.Format("id为{0}的用户还没有绑定微信公众号，无法使用微信公众号支付!", userInfo.Id));
                 }
                 serviceOrder.openid = userInfo.WeChat;
             }
@@ -167,7 +170,7 @@ namespace Jueci.ApiService.Pay
             var orderData = _wxPayService.GetPaySign(wxpayConfig, payOrderInfo, wxpayData);
             var unifiedPayOrderOutput = new UnifiedPayOrderOutput()
             {
-                OrderData = payOrderInfo.PayMode == PayMode.App ? (object) (WxPaySignAppOptions)orderData : (WxPaySignMobileOptions)orderData,
+                OrderData = payOrderInfo.PayMode == PayMode.App ? (object)(WxPaySignAppOptions)orderData : (WxPaySignMobileOptions)orderData,
                 OrderId = payOrderInfo.Id,
             };
 

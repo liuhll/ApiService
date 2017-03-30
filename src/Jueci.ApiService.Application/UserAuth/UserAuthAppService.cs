@@ -136,7 +136,15 @@ namespace Jueci.ApiService.UserAuth
                     {
                         return new ResultMessage<SalesResultMessage>(ResultCode.Fail, "Fail", new SalesResultMessage(SalesResultType.OnlinePurchaseNullOrderId));
                     }
-                    
+                    try
+                    {
+                        await _salesSoftwareProcessor.PurchaseSoftServiceOnline(userInfo, input.MapTo<SalesInfoModel>());
+                        return new ResultMessage<SalesResultMessage>(ResultCode.Success, "Success", new SalesResultMessage(SalesResultType.Success));
+                    }
+                    catch (Exception e)
+                    {
+                        return new ResultMessage<SalesResultMessage>(ResultCode.Fail, "Fail", new SalesResultMessage(SalesResultType.Other, e.Message));
+                    }
                     break;
             }
             return null;

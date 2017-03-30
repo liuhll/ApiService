@@ -102,6 +102,7 @@
     <Compile Include="ApiServiceCoreModule.cs" />
     <Compile Include="ApiAuthorization\JeuciAuthorizeAttribute.cs" />
     <Compile Include="Common\Enums\Appcode.cs" />
+    <Compile Include="Common\Enums\OrderType.cs" />
     <Compile Include="Common\Enums\Pay.cs" />
     <Compile Include="Common\Enums\PurchaseType.cs" />
     <Compile Include="Common\Enums\ResultCode.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Common\Tools\OrderHelper.cs" />
     <Compile Include="Common\Tools\ToolHelper.cs" />
     <Compile Include="Pay\Entities\UserPayOrderInfo.cs" />
+    <Compile Include="Pay\IOrderQueryPolicy.cs" />
     <Compile Include="Pay\IPayConfigLoader.cs" />
     <Compile Include="Pay\IPayService.cs" />
     <Compile Include="Pay\Lib\AliPayConfig.cs" />
@@ -137,6 +139,7 @@
     <Compile Include="Pay\Models\WxPaySignAppOptions.cs" />
     <Compile Include="Pay\Models\WxPaySignMobileOptions.cs" />
     <Compile Include="Pay\Models\WxPaySignOptionsBasic.cs" />
+    <Compile Include="Pay\OrderQueryPolicy.cs" />
     <Compile Include="Pay\PayConfigLoader.cs" />
     <Compile Include="Pay\WxPay\IWxPayService.cs" />
     <Compile Include="Pay\WxPay\WxPayService.cs" />

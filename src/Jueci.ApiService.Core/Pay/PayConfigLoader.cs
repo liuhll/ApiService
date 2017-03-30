@@ -75,6 +75,17 @@ namespace Jueci.ApiService.Pay
             return (T)payconfig;
         }
 
+        public T GetPayConfigInfoByAppid<T>(PayType payType, string appid) where T : BasicPay
+        {
+            var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppId.Equals(appid, StringComparison.OrdinalIgnoreCase));
+            if (payconfig == null)
+            {
+                LogHelper.Logger.Error(string.Format("不存在指定的支付配置信息;PayType:{0},Appcode:{1}", payType, appid));
+                throw new Exception(string.Format("不存在指定的支付配置信息;PayType:{0},Appcode:{1}", payType, appid));
+            }
+            return (T)payconfig;
+        }
+
         public BasicPay GetPayConfigInfo(PayType payType, string appCode)
         {
             var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode.Equals(appCode,StringComparison.OrdinalIgnoreCase));
