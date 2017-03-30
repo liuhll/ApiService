@@ -126,6 +126,7 @@
     <Compile Include="Pay\IOrderQueryPolicy.cs" />
     <Compile Include="Pay\IPayConfigLoader.cs" />
     <Compile Include="Pay\IPayService.cs" />
+    <Compile Include="Recharge\IRechargeService.cs" />
     <Compile Include="Pay\Lib\AliPayConfig.cs" />
     <Compile Include="Pay\Lib\AlipayData.cs" />
     <Compile Include="Pay\Lib\HttpService.cs" />
@@ -141,6 +142,7 @@
     <Compile Include="Pay\Models\WxPaySignOptionsBasic.cs" />
     <Compile Include="Pay\OrderQueryPolicy.cs" />
     <Compile Include="Pay\PayConfigLoader.cs" />
+    <Compile Include="Recharge\RechargeService.cs" />
     <Compile Include="Pay\WxPay\IWxPayService.cs" />
     <Compile Include="Pay\WxPay\WxPayService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

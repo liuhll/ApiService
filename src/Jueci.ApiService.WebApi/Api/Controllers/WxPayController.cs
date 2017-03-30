@@ -9,6 +9,7 @@ using Jueci.ApiService.Pay;
 using Jueci.ApiService.Pay.Dtos;
 using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.Pay.Models;
+using Jueci.ApiService.Recharge;
 using Jueci.ApiService.UserAuth;
 using Jueci.ApiService.UserAuth.Dtos;
 using Newtonsoft.Json.Linq;
@@ -20,11 +21,17 @@ namespace Jueci.ApiService.Api.Controllers
         private readonly IRepository<UserPayOrderInfo, string> _userPayOrderRepository;
         private readonly IPayConfigLoader _payConfigLoader;
         private readonly IUserAuthAppService _userAuthAppService;
-        public WxPayController(IRepository<UserPayOrderInfo, string> userPayOrderRepository, IPayConfigLoader payConfigLoader, IUserAuthAppService userAuthAppService)
+        private readonly IRechargeService _rechargeService;
+
+        public WxPayController(IRepository<UserPayOrderInfo, string> userPayOrderRepository,
+            IPayConfigLoader payConfigLoader, 
+            IUserAuthAppService userAuthAppService,
+            IRechargeService rechargeService)
         {
             _userPayOrderRepository = userPayOrderRepository;
             _payConfigLoader = payConfigLoader;
             _userAuthAppService = userAuthAppService;
+            _rechargeService = rechargeService;
         }
 
         public async Task<string> WxPayNotify()
@@ -67,7 +74,18 @@ namespace Jueci.ApiService.Api.Controllers
 
             if (userPayOrder.GoodsType == 0)
             {
-
+                try
+                {
+                    if (await _rechargeService.UserRecharge(userPayOrder.Id))
+                    {
+                        return string.Format(xml, "FAIL", "充值成功");
+                    }
+                    return string.Format(xml, "FAIL", "充值失败");
+                }
+                catch (Exception e)
+                {
+                    return string.Format(xml, "FAIL", e.Message);
+                }
             }
             else
             {
