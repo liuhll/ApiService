@@ -6,6 +6,7 @@ using Abp.Logging;
 using Jueci.ApiService.Common.Enums;
 using Jueci.ApiService.Common.Tools;
 using Jueci.ApiService.Pay;
+using Jueci.ApiService.Pay.AliPay;
 using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.Pay.Models;
 using Jueci.ApiService.UserAuth.Entities;
@@ -19,18 +20,20 @@ namespace Jueci.ApiService.Recharge
         private readonly IPayConfigLoader _payConfigLoader;
         private readonly IRepository<UserInfo> _userInfoRepository;
         private readonly IRepository<UserRecharge, string> _userRechargeRepository;
+        private readonly IAlipayRequest _alipayRequest;
 
         public RechargeService(IRepository<UserPayOrderInfo, string> userPayOrderRepository,
             IOrderQueryPolicy orderQueryPolicy,
             IPayConfigLoader payConfigLoader,
             IRepository<UserInfo> userInfoRepository,
-            IRepository<UserRecharge, string> userRechargeRepository)
+            IRepository<UserRecharge, string> userRechargeRepository, IAlipayRequest alipayRequest)
         {
             _userPayOrderRepository = userPayOrderRepository;
             _orderQueryPolicy = orderQueryPolicy;
             _payConfigLoader = payConfigLoader;
             _userInfoRepository = userInfoRepository;
             _userRechargeRepository = userRechargeRepository;
+            _alipayRequest = alipayRequest;
         }
 
         [UnitOfWork]
@@ -44,6 +47,8 @@ namespace Jueci.ApiService.Recharge
 
             string transactionId = null;
             string tradeState = null;
+
+            #region 微信支付
 
             if (userPayOrder.PayType == PayType.Wechat)
             {
@@ -134,11 +139,86 @@ namespace Jueci.ApiService.Recharge
                 return false;
 
             }
-            else if (userPayOrder.PayType == PayType.AliPay)
+
+            #endregion
+
+            #region 支付宝支付
+
+            if (userPayOrder.PayType == PayType.AliPay)
             {
-                //: todo 支付宝充值充值
-                throw new NotImplementedException();
+                var payConfig = _payConfigLoader.GetPayConfigInfoByAppid<Alipay>(PayType.AliPay, userPayOrder.PayAppId);
+                var alipayData = _alipayRequest.Query(userPayOrder.Id, OrderType.OutTradeNo, payConfig);
+                tradeState = alipayData.GetValue("trade_status");
+                transactionId = string.Empty;
+                if (alipayData.IsSet("trade_no"))
+                {
+                    transactionId = alipayData.GetValue("trade_no");
+                }
+                if (tradeState.Equals("TRADE_SUCCESS") || tradeState.Equals("TRADE_FINISHED"))
+                {
+                    try
+                    {
+                        var userInfo = _userInfoRepository.Get(userPayOrder.Uid);
+                        var fee = Convert.ToDecimal(alipayData.GetValue("total_amount"));
+
+                        userPayOrder.PayExtendInfo = alipayData.ToJson();
+                        userPayOrder.PayState = tradeState;
+                        userPayOrder.PayOrderId = transactionId;
+                        userPayOrder.State = 2;
+                        _userPayOrderRepository.Update(userPayOrder);
+
+                        _userRechargeRepository.Insert(new UserRecharge()
+                        {
+                            Id = OrderHelper.GenerateNewId(),
+                            Cost = fee,
+                            AdminId = null,
+                            CreateTime = DateTime.Now,
+                            OrderId = orderId,
+                            Remarks = "微信公众号充值",
+                            UId = userInfo.Id
+                        });
+                        userInfo.Fund += fee;
+                        await _userInfoRepository.UpdateAsync(userInfo);
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
+                    }
+                }
+                if (tradeState == "NOTPAY")
+                {
+                    //算作超时关闭订单
+                    if (userPayOrder.CreateTime.AddMinutes(20) < DateTime.Now)
+                    {
+
+                        userPayOrder.PayExtendInfo = alipayData.ToJson();
+                        userPayOrder.PayState = tradeState;
+                        userPayOrder.PayOrderId = transactionId;
+                        userPayOrder.State = 3;
+                        _userPayOrderRepository.Update(userPayOrder);
+
+                        LogHelper.Logger.Debug("超时关闭订单");
+                        return false;
+                    }
+                    else
+                    {
+
+                        userPayOrder.PayExtendInfo = alipayData.ToJson();
+                        userPayOrder.PayState = tradeState;
+                        userPayOrder.PayOrderId = transactionId;
+
+                        _userPayOrderRepository.Update(userPayOrder);
+                        LogHelper.Logger.Debug("订单尚未支付，等待支付！");
+                        return false;
+
+                    }
+                }
+                return false;
             }
+
+            #endregion
+
             return false;
         }
     }

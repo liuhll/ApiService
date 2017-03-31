@@ -37,6 +37,12 @@ namespace Jueci.ApiService.Api.Controllers
             _rechargeService = rechargeService;
         }
 
+        /// <summary>
+        /// 支付宝回调接口
+        /// </summary>
+        /// <returns>业务处理是否成功</returns>
+        /// <remarks>支付宝支付异步回调接口，作为支付宝配置参数配置项notifyUrl的值。
+        /// <br/>请不要直接调用该接口</remarks>
         public async Task<string> AliPayNotify()
         {
             LogHelper.Logger.Debug("回调支付宝支付接口");
@@ -47,12 +53,12 @@ namespace Jueci.ApiService.Api.Controllers
             {
                 alipayData.SetValue(key, HttpContext.Current.Request.Form[key]);
             }
-            
+
             var outTradeNo = alipayData.GetValue("out_trade_no");
             var userPayOrder = _userPayOrderRepository.Get(outTradeNo);
             if (userPayOrder == null)
             {
-                Logger.Error(string.Format("数据库中不存在单号为{0}的订单",outTradeNo));
+                Logger.Error(string.Format("数据库中不存在单号为{0}的订单", outTradeNo));
                 resultMsg = "fail";
                 return resultMsg;
             }
@@ -66,7 +72,7 @@ namespace Jueci.ApiService.Api.Controllers
                 return resultMsg;
             }
 
-            if (!VerifyOrder(alipayData,userPayOrder, payConfig))
+            if (!VerifyOrder(alipayData, userPayOrder, payConfig))
             {
                 resultMsg = "fail";
                 return resultMsg;
@@ -74,6 +80,24 @@ namespace Jueci.ApiService.Api.Controllers
 
             if (userPayOrder.GoodsType == 0)
             {
+                try
+                {
+                    if (await _rechargeService.UserRecharge(userPayOrder.Id))
+                    {
+                        resultMsg = "success";
+                    }
+                    else
+                    {
+                        resultMsg = "fail";
+                    }
+                    return resultMsg;
+
+                }
+                catch (Exception e)
+                {
+                    resultMsg = "fail";
+                    return resultMsg;
+                }
             }
             else
             {
@@ -89,10 +113,8 @@ namespace Jueci.ApiService.Api.Controllers
                     AppId = payConfig.AppId,
                     Cost = userPayOrder.Cost,
                     SalesWay = "Online",
-                    Remarks =
-                userPayOrder.PayMode == PayMode.App
-                    ? "手机APP支付"
-                    : userPayOrder.PayMode == PayMode.Mobile ? "微信公众号支付" : "PC端支付",
+                    Remarks = userPayOrder.PayMode == PayMode.App ?
+                    "手机APP支付" : userPayOrder.PayMode == PayMode.Mobile ? "微信公众号支付" : "PC端支付",
                     OrderId = userPayOrder.Id,
 
                 };

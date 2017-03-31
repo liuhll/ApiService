@@ -18,7 +18,7 @@ namespace Jueci.ApiService.Pay
         /// 统一下单接口
         /// </summary>
         /// <param name="input">支付订单参数</param>
-        /// <remarks>创建一个支付订单，并调用微信统一下单API接口，<br/>并返回调起支付API参数(仅限微信公众号支付和APP支付)</remarks>
+        /// <remarks>创建一个支付订单，并向支付系统后台下单，<br/>并返回调起支付API参数(仅限微信公众号支付和APP支付)</remarks>
         ResultMessage<UnifiedPayOrderOutput> UnifiedPayOrder(PayOrderInput input);
 
 
