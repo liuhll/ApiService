@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Aop.Api.Util;
+using Jueci.ApiService.Pay.Models;
 using LitJson;
 
 namespace Jueci.ApiService.Pay.Lib
@@ -48,15 +50,20 @@ namespace Jueci.ApiService.Pay.Lib
                 return false;
         }
 
-        public bool SignVerified()
-        {
-            return AlipaySignature.RSACheckV1(m_values, AliPayConfig.ALIPAY_PUBLIC_KEY, AliPayConfig.CHARSET, AliPayConfig.SIGN_TYPE, false);
-        }
+        //public bool SignVerified()
+        //{
+            
+        //}
 
         public string ToJson()
         {
             string jsonStr = JsonMapper.ToJson(m_values);
             return jsonStr;
+        }
+
+        public bool SignVerified(Alipay payConfig)
+        {
+            return AlipaySignature.RSACheckV1(m_values, payConfig.AppPublicKey, AliPayConfig.CHARSET, AliPayConfig.SIGN_TYPE, false);
         }
     }
 }

@@ -47,14 +47,7 @@ namespace Jueci.ApiService.Api.Controllers
             {
                 alipayData.SetValue(key, HttpContext.Current.Request.Form[key]);
             }
-            var signVerify = alipayData.SignVerified();
-            if (!signVerify)
-            {
-                Logger.Error("签名失败，这可能是假冒的回调");
-                resultMsg ="fail";
-                return resultMsg;
-            }
-
+            
             var outTradeNo = alipayData.GetValue("out_trade_no");
             var userPayOrder = _userPayOrderRepository.Get(outTradeNo);
             if (userPayOrder == null)
@@ -64,6 +57,15 @@ namespace Jueci.ApiService.Api.Controllers
                 return resultMsg;
             }
             var payConfig = _payConfigLoader.GetPayConfigInfoByAppid<Alipay>(PayType.AliPay, userPayOrder.PayAppId);
+
+            var signVerify = alipayData.SignVerified(payConfig);
+            if (!signVerify)
+            {
+                Logger.Error("签名失败，这可能是假冒的回调");
+                resultMsg = "fail";
+                return resultMsg;
+            }
+
             if (!VerifyOrder(alipayData,userPayOrder, payConfig))
             {
                 resultMsg = "fail";
