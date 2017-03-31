@@ -60,9 +60,44 @@ namespace Jueci.ApiService.Pay.AliPay
             return true;
         }
 
-        public AlipayData Query(string id, OrderType outTradeNo)
+        public AlipayData Query(string id, OrderType outTradeNo, Alipay alipayConfig)
         {
-            throw new NotImplementedException();
+            IAopClient aopClient = new DefaultAopClient(alipayConfig.ReturnUrl,
+                alipayConfig.AppId,
+                alipayConfig.AppPrivateKey,
+                AliPayConfig.FORMAT,
+                AliPayConfig.CHARSET,
+                AliPayConfig.SIGN_TYPE,
+                alipayConfig.AppPublicKey);
+            AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+            var requstData = "{\"" + (outTradeNo == OrderType.OutTradeNo ? "out_trade_no" : "trade_no") + "\":\"" + id +
+                             "\"}";
+
+            //string.Format(, outTradeNo == OrderType.OutTradeNo ? "out_trade_no" : "trade_no",id);
+            request.BizContent = requstData;
+            var response = aopClient.Execute(request);
+            var alipayData = new AlipayData();
+            if (response.IsError)
+            {
+                LogHelper.Logger.Error("查询订单失败：" + response.Msg + "," + response.SubMsg);
+                if (response.Code == "40004")
+                {
+                    alipayData.SetValue("trade_status", "NOPAY");
+                    alipayData.SetValue(outTradeNo == OrderType.OutTradeNo ? "out_trade_no" : "trade_no", id);
+                    return alipayData;
+                }
+
+                throw new Exception("查询订单失败，原因" + response.Msg);
+            }
+            alipayData.SetValue("trade_status", response.TradeStatus);
+            alipayData.SetValue("trade_no", response.TradeStatus);
+            alipayData.SetValue("out_trade_no", response.OutTradeNo);
+            alipayData.SetValue("buyer_logon_id", response.BuyerLogonId);
+            alipayData.SetValue("total_amount", response.TotalAmount);
+            alipayData.SetValue("receipt_amount", response.ReceiptAmount);
+            alipayData.SetValue("buyer_pay_amount", response.BuyerPayAmount);
+            return alipayData;
+
         }
     }
 }

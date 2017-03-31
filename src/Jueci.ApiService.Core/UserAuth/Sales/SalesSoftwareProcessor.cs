@@ -11,6 +11,7 @@ using Jueci.ApiService.Common.Enums;
 using Jueci.ApiService.Common.Exceptions;
 using Jueci.ApiService.Common.Tools;
 using Jueci.ApiService.Pay;
+using Jueci.ApiService.Pay.AliPay;
 using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.Pay.Lib;
 using Jueci.ApiService.Pay.Models;
@@ -31,6 +32,7 @@ namespace Jueci.ApiService.UserAuth.Sales
         private readonly IOrderQueryPolicy _orderQueryPolicy;
         private readonly IRepository<UserPayOrderInfo, string> _userPayOrderRepository;
         private readonly IPayConfigLoader _payConfigLoader;
+        private readonly IAlipayRequest _alipayRequest;
 
         public SalesSoftwareProcessor(IRepository<UserServiceAuthInfo> userServiceAuthRepository,
             IRepository<ServicePrice> servicePriceRepository,
@@ -39,7 +41,7 @@ namespace Jueci.ApiService.UserAuth.Sales
             IRepository<UserServiceSubscriptionInfo, string> userServiceSubscriptionRepository,
             IRepository<UserRecharge, string> userRechargeRepository, IUnitOfWorkManager unitOfWorkManager,
             IOrderQueryPolicy orderQueryPolicy, IRepository<UserPayOrderInfo, string> userPayOrderRepository,
-            IPayConfigLoader payConfigLoader)
+            IPayConfigLoader payConfigLoader, IAlipayRequest alipayRequest)
         {
             _userServiceAuthRepository = userServiceAuthRepository;
             _servicePriceRepository = servicePriceRepository;
@@ -51,6 +53,7 @@ namespace Jueci.ApiService.UserAuth.Sales
             _orderQueryPolicy = orderQueryPolicy;
             _userPayOrderRepository = userPayOrderRepository;
             _payConfigLoader = payConfigLoader;
+            _alipayRequest = alipayRequest;
         }
 
         public async Task<UserCanPurchaseCode> UserCanbyPruductService(UserInfo user, int servicePriceId)
@@ -265,34 +268,36 @@ namespace Jueci.ApiService.UserAuth.Sales
 
             string transactionId = null;
             string tradeState = null;
+            var servicePrice = await _servicePriceRepository.FirstOrDefaultAsync(p => p.Id == salesInfo.PId);
+
+            #region 微信支付在线购买
+
             if (userPayOrder.PayType == PayType.Wechat)
             {
                 var payConfig = _payConfigLoader.GetPayConfigInfoByAppid<WxPay>(PayType.Wechat, userPayOrder.PayAppId);
-                var wxPayData = _orderQueryPolicy.Orderquery(userPayOrder.PayOrderId, OrderType.OutTradeNo, payConfig);
+                var wxPayData = _orderQueryPolicy.Orderquery(userPayOrder.Id, OrderType.OutTradeNo, payConfig);
 
                 if (wxPayData.GetValue("return_code").ToString() != "SUCCESS" ||
-                wxPayData.GetValue("result_code").ToString() != "SUCCESS")
+                    wxPayData.GetValue("result_code").ToString() != "SUCCESS")
                 {
                     throw new Exception(string.Format("单号为{0}的订单支付失败", salesInfo.OrderId));
                 }
                 transactionId = wxPayData.GetValue("transaction_id").ToString();
                 tradeState = wxPayData.GetValue("trade_state").ToString();
 
-
-                var servicePrice = await _servicePriceRepository.FirstOrDefaultAsync(p => p.Id == salesInfo.PId);
-
                 UserServiceAuthInfo userServiceAuth = null;
                 UserServiceSubscriptionInfo userServiceSubscriptionInfo = null;
                 List<UserServiceSubscriptionInfo> historyEffectiveOrder = null;
 
-                var isNewPurchase = SetUserAuthData(userInfo, salesInfo, servicePrice, out userServiceAuth, out userServiceSubscriptionInfo, out historyEffectiveOrder);
+                var isNewPurchase = SetUserAuthData(userInfo, salesInfo, servicePrice, out userServiceAuth,
+                    out userServiceSubscriptionInfo, out historyEffectiveOrder);
 
                 if (tradeState == "SUCCESS")
                 {
                     var totalFee = Convert.ToDecimal(wxPayData.GetValue("total_fee"))/100;
                     if (totalFee != userPayOrder.Cost)
                     {
-                        throw new Exception(string.Format("支付金额与订单{0}金额不一致！",userPayOrder.Cost));
+                        throw new Exception(string.Format("支付金额与订单{0}金额不一致！", userPayOrder.Cost));
                     }
                     userPayOrder.PayState = tradeState;
                     userPayOrder.PayOrderId = transactionId;
@@ -318,7 +323,7 @@ namespace Jueci.ApiService.UserAuth.Sales
                                 historyOrder.UpdateTime = DateTime.Now;
                                 await _userServiceSubscriptionRepository.UpdateAsync(historyOrder);
                             }
-                        }                    
+                        }
                         await _userServiceSubscriptionRepository.InsertAsync(userServiceSubscriptionInfo);
                         await _userPayOrderRepository.UpdateAsync(userPayOrder);
                         await uow.CompleteAsync();
@@ -353,13 +358,87 @@ namespace Jueci.ApiService.UserAuth.Sales
                         await _userPayOrderRepository.UpdateAsync(userPayOrder);
                     }
                 }
-               
+
             }
+                #endregion
+
+           #region 支付宝在线购买
+
             else if (userPayOrder.PayType == PayType.AliPay)
             {
-                //: todo ALIPAY 查询支付宝支付，并且
+                var payConfig = _payConfigLoader.GetPayConfigInfoByAppid<Alipay>(PayType.AliPay, userPayOrder.PayAppId);
+                var alipayData = _alipayRequest.Query(userPayOrder.Id, OrderType.OutTradeNo, payConfig);
+                tradeState = alipayData.GetValue("trade_status");
+                transactionId = string.Empty;
+                if (alipayData.IsSet("trade_no"))
+                {
+                    transactionId = alipayData.GetValue("trade_no");
+                }
+
+
+                UserServiceAuthInfo userServiceAuth = null;
+                UserServiceSubscriptionInfo userServiceSubscriptionInfo = null;
+                List<UserServiceSubscriptionInfo> historyEffectiveOrder = null;
+
+                var isNewPurchase = SetUserAuthData(userInfo, salesInfo, servicePrice, out userServiceAuth,
+                    out userServiceSubscriptionInfo, out historyEffectiveOrder);
+
+                if (tradeState.Equals("TRADE_SUCCESS") || tradeState.Equals("TRADE_FINISHED"))
+                {
+                    userPayOrder.PayState = tradeState;
+                    userPayOrder.PayOrderId = transactionId;
+                    userPayOrder.PayExtendInfo = alipayData.ToJson();
+                    userPayOrder.UpdateTime = DateTime.Now;
+                    userPayOrder.State = 2;
+
+                    using (var uow = _unitOfWorkManager.Begin())
+                    {
+                        if (isNewPurchase)
+                        {
+                            await _userServiceAuthRepository.InsertAsync(userServiceAuth);
+                        }
+                        else
+                        {
+                            await _userServiceAuthRepository.UpdateAsync(userServiceAuth);
+                        }
+                        if (historyEffectiveOrder != null && historyEffectiveOrder.Count > 0)
+                        {
+                            foreach (var historyOrder in historyEffectiveOrder)
+                            {
+                                historyOrder.State = OrderState.Legal;
+                                historyOrder.UpdateTime = DateTime.Now;
+                                await _userServiceSubscriptionRepository.UpdateAsync(historyOrder);
+                            }
+                        }
+                        await _userServiceSubscriptionRepository.InsertAsync(userServiceSubscriptionInfo);
+                        await _userPayOrderRepository.UpdateAsync(userPayOrder);
+                        await uow.CompleteAsync();
+
+                    }
+                }
+                else if (tradeState == "NOTPAY")
+                {
+                    if (userPayOrder.CreateTime.AddMinutes(20) < DateTime.Now)
+                    {
+                        userPayOrder.PayState = tradeState;
+                        userPayOrder.PayOrderId = transactionId;
+                        userPayOrder.PayExtendInfo = alipayData.ToJson();
+                        userPayOrder.UpdateTime = DateTime.Now;
+                        userPayOrder.State = 3;
+                        await _userPayOrderRepository.UpdateAsync(userPayOrder);
+                    }
+                    else
+                    {
+                        userPayOrder.PayState = tradeState;
+                        userPayOrder.PayOrderId = transactionId;
+                        userPayOrder.PayExtendInfo = alipayData.ToJson();
+                        userPayOrder.UpdateTime = DateTime.Now;
+                        await _userPayOrderRepository.UpdateAsync(userPayOrder);
+                    }
+                }
             }
 
+            #endregion
 
         }
 

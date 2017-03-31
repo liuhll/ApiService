@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApiServiceWebApiModule.cs" />
+    <Compile Include="Api\Controllers\AliPayController.cs" />
     <Compile Include="Api\Controllers\WxPayController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

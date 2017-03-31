@@ -34,6 +34,11 @@ namespace Jueci.ApiService.Api.Controllers
             _rechargeService = rechargeService;
         }
 
+        /// <summary>
+        /// 微信支付回调接口
+        /// </summary>
+        /// <remarks>微信回调接口，仅供微信支付配置回调URL使用，请不要直接调用</remarks>
+        /// <returns></returns>
         public async Task<string> WxPayNotify()
         {
             LogHelper.Logger.Debug("开始回调支付接口");

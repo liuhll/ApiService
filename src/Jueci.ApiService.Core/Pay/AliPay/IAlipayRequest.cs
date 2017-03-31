@@ -10,6 +10,6 @@ namespace Jueci.ApiService.Pay.AliPay
     {
         bool Wappay(AlipayOrderOptions options, Alipay alipayConfig, PayMode payMode, out object respData);
 
-        AlipayData Query(string id, OrderType outTradeNo);
+        AlipayData Query(string id, OrderType outTradeNo,Alipay alipayConfig);
     }
 }

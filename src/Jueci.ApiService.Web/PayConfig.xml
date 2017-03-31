@@ -40,6 +40,7 @@
       <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
       <notifyUrl>http://pay.camew.com/alinotify.ashx</notifyUrl>
       <returnUrl>http://pay.camew.com/alinotify.ashx</returnUrl>
+      <pid>123456</pid>
       <PublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB</PublicKey>
       <PrivateKey>
         MIICXAIBAAKBgQCbgEgtHhfs8ilSk6hrqkkib/zCLZ87+NG2nwyxpfp3I6bUATU2
@@ -60,6 +61,7 @@
 
     <app AppCode="Default" Name="默认的支付宝账号">
       <appId>2016082801815123</appId>
+      <pid>123456</pid>
       <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
       <notifyUrl>http://pay.camew.com/alinotify.ashx</notifyUrl>
       <returnUrl>http://pay.camew.com/alinotify.ashx</returnUrl>

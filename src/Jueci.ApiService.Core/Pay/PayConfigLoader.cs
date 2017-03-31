@@ -61,6 +61,7 @@ namespace Jueci.ApiService.Pay
                     AppPrivateKey = node.SelectSingleNode("./PrivateKey")?.InnerText.Replace("\r", "").Replace("\n", "").Replace(" ", ""),
                     ReturnUrl = node.SelectSingleNode("./returnUrl")?.InnerText,
                     ServerUrl = node.SelectSingleNode("./serverUrl")?.InnerText,
+                    PId = node.SelectSingleNode("./pid")?.InnerText,
                 };
                 payAppConfigs.Add(alipay);
             }

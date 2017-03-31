@@ -23,5 +23,6 @@ namespace Jueci.ApiService.Pay.Models
         public string AppPublicKey { get; set; }
 
         public string ServerUrl { get; set; }
+        public string PId { get; set; }
     }
 }
