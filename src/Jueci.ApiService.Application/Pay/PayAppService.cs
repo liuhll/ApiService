@@ -11,6 +11,7 @@ using Abp.Logging;
 using Jueci.ApiService.Common;
 using Jueci.ApiService.Common.Enums;
 using Jueci.ApiService.Common.Tools;
+using Jueci.ApiService.Pay.AliPay;
 using Jueci.ApiService.Pay.Dtos;
 using Jueci.ApiService.Pay.Entities;
 using Jueci.ApiService.Pay.Lib;
@@ -29,18 +30,21 @@ namespace Jueci.ApiService.Pay
         private readonly IRepository<ServicePrice> _servicePriceRepository;
         private readonly IPayConfigLoader _payConfigLoader;
         private readonly IWxPayService _wxPayService;
+        private readonly IAlipayRequest _alipayRequest;
 
         public PayAppService(IRepository<UserPayOrderInfo, string> userPayOrderRepository,
             IRepository<UserInfo> userRepository,
             IRepository<ServicePrice> servicePriceRepository,
             IPayConfigLoader payConfigLoader,
-            IWxPayService wxPayService)
+            IWxPayService wxPayService, 
+            IAlipayRequest alipayRequest)
         {
             _userPayOrderRepository = userPayOrderRepository;
             _userRepository = userRepository;
             _servicePriceRepository = servicePriceRepository;
             _payConfigLoader = payConfigLoader;
             _wxPayService = wxPayService;
+            _alipayRequest = alipayRequest;
         }
 
 
@@ -117,14 +121,16 @@ namespace Jueci.ApiService.Pay
                 orderInfoDto.PayType = payType;
                 orderInfoDto.PayMode = ConvertHelper.StrigToEnum<PayMode>(input.PayModeStr);
                 var payOrderInfo = NewPayOrder(orderInfoDto, input);
-                var payConfig = _payConfigLoader.GetPayConfigInfo(PayType.Wechat, input.AppCode);
+               
                 switch (payType)
                 {
                     case PayType.Wechat:
+                        var payConfig = (Models.WxPay)_payConfigLoader.GetPayConfigInfo(PayType.Wechat, input.AppCode);
                         return WxUnifiedPayOrder(payConfig, payOrderInfo, userInfo);
 
                     case PayType.AliPay:
-                        throw new NotImplementedException();
+                        var aliPayConfig = (Alipay)_payConfigLoader.GetPayConfigInfo(PayType.AliPay, input.AppCode);
+                        return AliUnifiedPayOrder(aliPayConfig, payOrderInfo, userInfo);
                     default:
                         throw new Exception("没有该类型的支付方式");
                 }
@@ -132,16 +138,53 @@ namespace Jueci.ApiService.Pay
             }
             catch (Exception ex)
             {
-                LogHelper.Logger.Error("统一下单失败！");
+                LogHelper.Logger.Error("统一下单失败！原因:" + ex.Message);
                 return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Fail, "统一下单失败！原因:" + ex.Message);
             }
         }
 
-        
-
-        private ResultMessage<UnifiedPayOrderOutput> WxUnifiedPayOrder(BasicPay payConfig, UserPayOrderInfo payOrderInfo, UserInfo userInfo)
+        private ResultMessage<UnifiedPayOrderOutput> AliUnifiedPayOrder(Alipay payConfig, UserPayOrderInfo payOrderInfo, UserInfo userInfo)
         {
-            var wxpayConfig = (Models.WxPay)payConfig;
+            var alipayOptions = new AlipayOrderOptions()
+            {
+                out_trade_no = payOrderInfo.Id,
+                seller_id = payConfig.AppId,
+                subject = payOrderInfo.GoodsName,
+                total_amount = payOrderInfo.Cost.ToString("0.00"),
+            };
+
+            object orderData = null;
+
+            var alipayResult = _alipayRequest.Wappay(alipayOptions, payConfig, payOrderInfo.PayMode, out orderData);
+
+            try
+            {
+                if (alipayResult)
+                {
+                    payOrderInfo.State = 1;
+                    payOrderInfo.UpdateTime = DateTime.Now;
+                    _userPayOrderRepository.Insert(payOrderInfo);
+
+                    var unifiedPayOrderOutput = new UnifiedPayOrderOutput()
+                    {
+                        OrderData = orderData,
+                        OrderId = payOrderInfo.Id,
+                    };
+                    return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Success, "统一下单成功", unifiedPayOrderOutput);
+                }
+                return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Fail, "统一下单失败");
+            }
+            catch (Exception e)
+            {
+                return new ResultMessage<UnifiedPayOrderOutput>(ResultCode.Fail, string.Format("统一下单失败,原因:"+e.Message));
+            }
+
+        }
+
+
+        private ResultMessage<UnifiedPayOrderOutput> WxUnifiedPayOrder(Models.WxPay wxpayConfig, UserPayOrderInfo payOrderInfo, UserInfo userInfo)
+        {
+
             var serviceOrder = new ServiceOrder()
             {
                 appid = wxpayConfig.AppId,

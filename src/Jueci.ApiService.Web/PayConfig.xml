@@ -39,6 +39,30 @@
       <appId>2016082801815123</appId>
       <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
       <notifyUrl>http://pay.camew.com/alinotify.ashx</notifyUrl>
+      <returnUrl>http://pay.camew.com/alinotify.ashx</returnUrl>
+      <PublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB</PublicKey>
+      <PrivateKey>
+        MIICXAIBAAKBgQCbgEgtHhfs8ilSk6hrqkkib/zCLZ87+NG2nwyxpfp3I6bUATU2
+        AHOxKWLCIKR/Y26hqV02eaT1j8GzJ/mueYKFTT+SU5mwL7bapOsAYjzGGTmT58bC
+        buHRFO9x9PwUTIxyJWroea2enLb2162npiTwKbpFMPlv8b14JOMSAN1tkwIDAQAB
+        AoGAXgfunUnLUf8FueeMOr7YRrjNcWZBGfTWa8Y12N7zXEP0x9KLKMKRMxpBm/49
+        OsMXzS4rLZvVgqCRkxKjSzwzDhNdAvDshhbNw2M1iM1BGAdZbpR2kS2M7vX6ttCZ
+        m91+kwHe7NRPMVIr2HPCWBIy63TcuVNFrteA9shKRhQNKvECQQDJzrebxtroxHQv
+        jheEo9bJ1igBAh8L9cEz1CFHlwffTHTPQaW98qB9vfI3zhLDbMFv0BMWyQIcMed1
+        j16BNXV9AkEAxUI51PXj3hslqS1XBm/HI/gqCdmfL9MjEmJAQtT3mzb38j398SBp
+        xTnvPsqCzsc8aM4U53yMzrZGdEcqt76cTwJAPg3Kd6QV/C0sbNMMeETI7xdjBaxZ
+        T5wp5H3+Hb1bNlaUNIbDKD1LDF8z8+Tx8BWpBXC97euxMmpF+egz7xc5IQJBAMLO
+        PnLUSy9DvBOxVSpkJVSedlW393+xkgdLxI6757P/uyoekrUY/5vpNR7bvAcdt8kB
+        DJ/33s8eL8IRrlw7//0CQBzn/nsL/4a3JenljHD+4ki9J9vv5qTAV6xZkbKRfdnu
+        MI1ZhFDB03pl4y7030fJlud+wK0uTYXLN3ILnhSYbaY=
+      </PrivateKey>
+    </app>
+
+    <app AppCode="Default" Name="默认的支付宝账号">
+      <appId>2016082801815123</appId>
+      <serverUrl>https://openapi.alipay.com/gateway.do</serverUrl>
+      <notifyUrl>http://pay.camew.com/alinotify.ashx</notifyUrl>
+      <returnUrl>http://pay.camew.com/alinotify.ashx</returnUrl>
       <PublicKey>MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDDI6d306Q8fIfCOaTXyiUeJHkrIvYISRcc73s3vF1ZT7XN8RNPwJxo8pWaJMmvyTn9N4HQ632qJBVHf8sxHi/fEsraprwCtzvzQETrNRwVxLO5jVmRGi60j8Ue1efIlzPXV9je9mkjzOmdssymZkh2QhUrCmZYI/FCEa3/cNMW0QIDAQAB</PublicKey>
       <PrivateKey>
         MIICXAIBAAKBgQCbgEgtHhfs8ilSk6hrqkkib/zCLZ87+NG2nwyxpfp3I6bUATU2

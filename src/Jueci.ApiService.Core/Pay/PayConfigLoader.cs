@@ -15,7 +15,7 @@ namespace Jueci.ApiService.Pay
 {
     public class PayConfigLoader : IPayConfigLoader
     {
-        private IList<BasicPay> payAppConfigs; 
+        private IList<BasicPay> payAppConfigs;
 
         public PayConfigLoader()
         {
@@ -25,7 +25,7 @@ namespace Jueci.ApiService.Pay
 
         private void LoadPayApps()
         {
-         
+
             var xmlDoc = new XmlDocument();
             var configFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "PayConfig.xml");
             xmlDoc.Load(configFileName);
@@ -42,7 +42,7 @@ namespace Jueci.ApiService.Pay
                     MchId = node.SelectSingleNode("./mchId")?.InnerText,
                     Name = node.Attributes["Name"]?.InnerText,
                     NotifyUrl = node.SelectSingleNode("./notifyUrl")?.InnerText,
-                    
+
                 };
 
                 payAppConfigs.Add(wxpay);
@@ -57,6 +57,10 @@ namespace Jueci.ApiService.Pay
                     NotifyUrl = node.SelectSingleNode("./notifyUrl")?.InnerText,
                     AppId = node.SelectSingleNode("./appId")?.InnerText,
                     AppCode = node.Attributes["AppCode"]?.InnerText,
+                    AppPublicKey = node.SelectSingleNode("./PublicKey")?.InnerText.Replace("\r", "").Replace("\n", "").Replace(" ", ""),
+                    AppPrivateKey = node.SelectSingleNode("./PrivateKey")?.InnerText.Replace("\r", "").Replace("\n", "").Replace(" ", ""),
+                    ReturnUrl = node.SelectSingleNode("./returnUrl")?.InnerText,
+                    ServerUrl = node.SelectSingleNode("./serverUrl")?.InnerText,
                 };
                 payAppConfigs.Add(alipay);
             }
@@ -88,9 +92,19 @@ namespace Jueci.ApiService.Pay
 
         public BasicPay GetPayConfigInfo(PayType payType, string appCode)
         {
-            var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode.Equals(appCode,StringComparison.OrdinalIgnoreCase));
+            if (payType == PayType.AliPay && string.IsNullOrEmpty(appCode))
+            {
+                appCode = "Default";
+            }
+
+            var payconfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode.Equals(appCode, StringComparison.OrdinalIgnoreCase));
             if (payconfig == null)
             {
+                var defaultPayConfig = payAppConfigs.FirstOrDefault(p => p.PayType == payType && p.AppCode.Equals("Default", StringComparison.OrdinalIgnoreCase));
+                if (defaultPayConfig != null)
+                {
+                    return defaultPayConfig;
+                }
                 LogHelper.Logger.Error(string.Format("不存在指定的支付配置信息;PayType:{0},Appcode:{1}", payType, appCode));
                 throw new Exception(string.Format("不存在指定的支付配置信息;PayType:{0},Appcode:{1}", payType, appCode));
             }

@@ -15,5 +15,13 @@ namespace Jueci.ApiService.Pay.Models
         }
 
         public override PayType PayType { get; protected set; }
+
+        public string ReturnUrl { get; set; }
+
+        public string AppPrivateKey { get; set; }
+
+        public string AppPublicKey { get; set; }
+
+        public string ServerUrl { get; set; }
     }
 }

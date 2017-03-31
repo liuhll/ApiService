@@ -38,6 +38,15 @@
       <HintPath>..\packages\Abp.1.3.1.0\lib\net452\Abp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="aliyun-net-sdk-core">
+      <HintPath>..\libs\aliyun-net-sdk-core.dll</HintPath>
+    </Reference>
+    <Reference Include="aliyun-net-sdk-dm">
+      <HintPath>..\libs\aliyun-net-sdk-dm.dll</HintPath>
+    </Reference>
+    <Reference Include="AopSdk">
+      <HintPath>..\libs\AopSdk.dll</HintPath>
+    </Reference>
     <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
@@ -119,13 +128,17 @@
     <Compile Include="Common\Tools\DateTimeHelper.cs" />
     <Compile Include="Common\Tools\EncryptionHelper.cs" />
     <Compile Include="Common\Tools\IpAddressHelper.cs" />
+    <Compile Include="Common\Tools\JsonHelper.cs" />
     <Compile Include="Common\Tools\NonceHelper.cs" />
     <Compile Include="Common\Tools\OrderHelper.cs" />
     <Compile Include="Common\Tools\ToolHelper.cs" />
+    <Compile Include="Pay\AliPay\AlipayRequest.cs" />
+    <Compile Include="Pay\AliPay\IAlipayRequest.cs" />
     <Compile Include="Pay\Entities\UserPayOrderInfo.cs" />
     <Compile Include="Pay\IOrderQueryPolicy.cs" />
     <Compile Include="Pay\IPayConfigLoader.cs" />
     <Compile Include="Pay\IPayService.cs" />
+    <Compile Include="Pay\Models\AlipayOrderOptions.cs" />
     <Compile Include="Recharge\IRechargeService.cs" />
     <Compile Include="Pay\Lib\AliPayConfig.cs" />
     <Compile Include="Pay\Lib\AlipayData.cs" />
